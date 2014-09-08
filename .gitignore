@@ -1,0 +1,6 @@
+*.db
+pkg
+*.sql
+*.swp
+test
+install
