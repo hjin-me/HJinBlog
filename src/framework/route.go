@@ -9,12 +9,6 @@ import (
 	//  "log"
 )
 
-type Context struct {
-	Params map[string]string
-	Res    http.ResponseWriter
-	Req    *http.Request
-}
-
 var routeList map[string][]routeInfo
 
 func Init() {
@@ -77,6 +71,10 @@ func Post(pattern string, fn controllerType) {
 
 func Delete(pattern string, fn controllerType) {
 	add("DELETE", pattern, fn)
+}
+
+func Option(pattern string, fn controllerType) {
+	add("OPTION", pattern, fn)
 }
 
 func All(pattern string, fn controllerType) {
