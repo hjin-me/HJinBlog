@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"text/template"
@@ -48,29 +49,41 @@ func (c httpContext) Params() map[string]string {
 
 func (c httpContext) Output(data interface{}, contentType string) {
 	res := c.Res()
-	h := res.Header()
-	h.Add("content-type", contentType)
 
-	fmt.Fprintf(res, "%s", data)
+	select {
+	case <-c.Done():
+		log.Println("request timeout", c.Err())
+	default:
+		h := res.Header()
+		h.Add("content-type", contentType)
+		fmt.Fprintf(res, "%s", data)
+	}
 }
 
 func (c httpContext) Json(data interface{}) {
 	res := c.Res()
-	h := res.Header()
-	h.Add("content-type", "application/json")
+	select {
+	case <-c.Done():
+		log.Println("request timeout", c.Err())
+	default:
+		h := res.Header()
+		h.Add("content-type", "application/json")
 
-	str, _ := json.Marshal(data)
-	fmt.Fprintf(res, "%s", str)
+		str, _ := json.Marshal(data)
+		fmt.Fprintf(res, "%s", str)
+	}
 }
 
 func (c httpContext) Tpl(data interface{}, path string) {
-	res, ok := c.Res()
-	if !ok {
-		panic(errors.New("Res is not Res"))
-		return
-	}
+	res := c.Res()
 	viewBase := os.Getenv("GOVIEW")
 	tpl := viewBase + path
 	texec := template.Must(template.ParseFiles(tpl))
-	texec.Execute(res, data)
+	select {
+	case <-c.Done():
+		log.Println("request timeout", c.Err())
+	default:
+		texec.Execute(res, data)
+
+	}
 }
