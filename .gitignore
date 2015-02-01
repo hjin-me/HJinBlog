@@ -4,3 +4,4 @@ pkg
 *.swp
 test
 install
+.idea
