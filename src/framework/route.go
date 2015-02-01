@@ -6,6 +6,10 @@ import (
 	"net/http"
 	"regexp"
 	"runtime"
+	"strings"
+	"time"
+
+	"github.com/golang/net/context"
 	//  "log"
 )
 
@@ -57,37 +61,6 @@ func App(port string) {
 	return
 }
 
-<<<<<<< HEAD
-func Put(pattern string, fn controllerType) {
-	add("PUT", pattern, fn)
-}
-
-func Get(pattern string, fn controllerType) {
-	add("GET", pattern, fn)
-}
-
-func Post(pattern string, fn controllerType) {
-	add("POST", pattern, fn)
-}
-
-func Delete(pattern string, fn controllerType) {
-	add("DELETE", pattern, fn)
-}
-
-func Option(pattern string, fn controllerType) {
-	add("OPTION", pattern, fn)
-}
-
-func All(pattern string, fn controllerType) {
-	add("GET", pattern, fn)
-	add("POST", pattern, fn)
-	add("DELETE", pattern, fn)
-	add("PUT", pattern, fn)
-	add("OPTION", pattern, fn)
-	add("HEAD", pattern, fn)
-}
-
-=======
 func Put(pattern string, fn ControllerType) {
 	add("PUT", pattern, fn)
 }
@@ -117,7 +90,6 @@ func All(pattern string, fn ControllerType) {
 	add("HEAD", pattern, fn)
 }
 
->>>>>>> FETCH_HEAD
 func File(prefix string, dir string) {
 	fsfn := http.StripPrefix(prefix, http.FileServer(http.Dir(dir))).ServeHTTP
 	method := "GET"
@@ -143,11 +115,7 @@ func File(prefix string, dir string) {
 	routeList[method] = append(routeList[method], rInfo)
 }
 
-<<<<<<< HEAD
-func add(method, pattern string, fn controllerType) {
-=======
 func add(method, pattern string, fn ControllerType) {
->>>>>>> FETCH_HEAD
 
 	fmt.Println("start " + method)
 	reg, nameList, err := parseRule(pattern)
@@ -169,19 +137,13 @@ func add(method, pattern string, fn ControllerType) {
 
 type routeInfo struct {
 	regex      *regexp.Regexp
-<<<<<<< HEAD
-	controller controllerType
-	nameList   []string
-}
-
-type controllerType func(http.ResponseWriter, *http.Request, Context)
-=======
 	controller ControllerType
 	nameList   []string
 }
 
 type ControllerType func(http.ResponseWriter, *http.Request, Context)
->>>>>>> FETCH_HEAD
+
+type controllerType func(http.ResponseWriter, *http.Request)
 
 type CustomMux struct {
 }
