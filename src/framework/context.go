@@ -2,7 +2,6 @@ package fw
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -17,37 +16,34 @@ type FwContext interface {
 	Res() http.ResponseWriter
 	Req() *http.Request
 	Params() map[string]string
+	Output(interface{}, string)
+	Json(interface{})
 }
 
 type httpContext struct {
 	context.Context
+	w http.ResponseWriter
+	r *http.Request
+	p map[string]string
 }
 
-func (c httpContext) Res() http.ResponseWriter {
-	res, ok := c.Value("Res").(http.ResponseWriter)
-	if !ok {
-		panic(errors.New("Res is not Res"))
-	}
-	return res
+func WithHttp(parent context.Context, w http.ResponseWriter, r *http.Request, p map[string]string) FwContext {
+	return &httpContext{parent, w, r, p}
 }
 
-func (c httpContext) Req() *http.Request {
-	req, ok := c.Value("Req").(*http.Request)
-	if !ok {
-		panic(errors.New("Req is not Req"))
-	}
-	return req
+func (c *httpContext) Res() http.ResponseWriter {
+	return c.w
 }
 
-func (c httpContext) Params() map[string]string {
-	params, ok := c.Value("Params").(map[string]string)
-	if !ok {
-		panic(errors.New("Params is not Params"))
-	}
-	return params
+func (c *httpContext) Req() *http.Request {
+	return c.r
 }
 
-func (c httpContext) Output(data interface{}, contentType string) {
+func (c *httpContext) Params() map[string]string {
+	return c.p
+}
+
+func (c *httpContext) Output(data interface{}, contentType string) {
 	res := c.Res()
 
 	select {
@@ -60,7 +56,7 @@ func (c httpContext) Output(data interface{}, contentType string) {
 	}
 }
 
-func (c httpContext) Json(data interface{}) {
+func (c *httpContext) Json(data interface{}) {
 	res := c.Res()
 	select {
 	case <-c.Done():
@@ -74,7 +70,7 @@ func (c httpContext) Json(data interface{}) {
 	}
 }
 
-func (c httpContext) Tpl(data interface{}, path string) {
+func (c *httpContext) Tpl(data interface{}, path string) {
 	res := c.Res()
 	viewBase := os.Getenv("GOVIEW")
 	tpl := viewBase + path

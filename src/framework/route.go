@@ -170,8 +170,6 @@ func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Println(v.regex)
 		log.Println(v.regex.FindStringSubmatch(r.URL.Path))
 		res := v.regex.FindStringSubmatch(r.URL.Path)
-		ctx = context.WithValue(ctx, "Req", r)
-		ctx = context.WithValue(ctx, "Res", w)
 
 		params := make(map[string]string)
 		log.Println(v.nameList)
@@ -184,14 +182,8 @@ func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				params[v] = ""
 			}
 		}
-		ctx = context.WithValue(ctx, "Params", params)
-		httpCtx, ok := ctx.(FwContext)
-		if !ok {
-			log.Fatal("convert Context to FwContext failed")
-		}
-
 		if len(res) > 0 {
-			v.controller(httpCtx)
+			v.controller(WithHttp(ctx, w, r, params))
 			break
 		}
 	}
