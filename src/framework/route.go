@@ -164,17 +164,9 @@ func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	for _, v := range list {
-		log.Println("====")
-		log.Println("url " + r.URL.Path)
-		log.Println("regexp")
-		log.Println(v.regex)
-		log.Println(v.regex.FindStringSubmatch(r.URL.Path))
 		res := v.regex.FindStringSubmatch(r.URL.Path)
 
 		params := make(map[string]string)
-		log.Println(v.nameList)
-		log.Println(res)
-		log.Println("====")
 		for k, v := range v.nameList {
 			if len(res) > k+1 {
 				params[v] = res[k+1]
