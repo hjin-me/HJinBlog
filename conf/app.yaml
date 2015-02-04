@@ -1,3 +1,5 @@
 env:
     port : 8088
+    level: development
     statics : statics
+    tpl: tpl

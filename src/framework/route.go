@@ -1,20 +1,55 @@
 package fw
 
 import (
+	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"regexp"
 	"time"
 
 	"runtime"
 
 	"golang.org/x/net/context"
+	"gopkg.in/yaml.v2"
 )
 
 var routeList map[string][]routeInfo
 
 func Init() {
 	routeList = make(map[string][]routeInfo)
+}
+
+type AppCfg struct {
+	Env struct {
+		Port  string
+		Level string
+		Tpl   string
+	}
+}
+
+func loadCfg(filename string) (cfg AppCfg) {
+	filename, err := filepath.Abs(filename)
+	if err != nil {
+		log.Fatalln("config file path error", err)
+	}
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatalln("open config file failed", err)
+	}
+	defer f.Close()
+	bf, err := ioutil.ReadAll(f)
+	if err != nil {
+		log.Fatalln("read config file failed", err)
+	}
+	err = yaml.Unmarshal(bf, &cfg)
+	if err != nil {
+		log.Fatalln("load config fail", err)
+	}
+	return
+
 }
 
 func parseRule(rule string) (*regexp.Regexp, []string, error) {
@@ -44,10 +79,18 @@ func parseRule(rule string) (*regexp.Regexp, []string, error) {
 	return reg, nameList, nil
 }
 
+var appConfig AppCfg
+
 func App(port string) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	Init()
+
+	var confFilename string
+	flag.StringVar(&confFilename, "c", "./app.yaml", "server configuration")
+
+	appConfig := loadCfg(confFilename)
 	mux := &CustomMux{}
-	err := http.ListenAndServe(":"+port, mux) //设置监听的端口
+	err := http.ListenAndServe(":"+appConfig.Env.Port, mux) //设置监听的端口
 	if err != nil {
 		log.Print("error")
 	}
@@ -162,7 +205,7 @@ func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if len(res) > 0 {
-			v.controller(WithHttp(ctx, w, r, params))
+			v.controller(WithHttp(ctx, w, r, params, appConfig.Env.Tpl))
 			break
 		}
 	}

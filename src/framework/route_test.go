@@ -62,3 +62,7 @@ func TestCustomMuxHttpHandle(t *testing.T) {
 	fmt.Printf("%s", greeting)
 
 }
+
+func TestLoadCfg(t *testing.T) {
+
+}

@@ -22,13 +22,14 @@ type FwContext interface {
 
 type httpContext struct {
 	context.Context
-	w http.ResponseWriter
-	r *http.Request
-	p map[string]string
+	w   http.ResponseWriter
+	r   *http.Request
+	p   map[string]string
+	tpl string
 }
 
-func WithHttp(parent context.Context, w http.ResponseWriter, r *http.Request, p map[string]string) FwContext {
-	return &httpContext{parent, w, r, p}
+func WithHttp(parent context.Context, w http.ResponseWriter, r *http.Request, p map[string]string, tpl string) FwContext {
+	return &httpContext{parent, w, r, p, tpl}
 }
 
 func (c *httpContext) Res() http.ResponseWriter {
