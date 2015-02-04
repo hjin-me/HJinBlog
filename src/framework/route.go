@@ -4,18 +4,16 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-	"runtime"
 	"time"
 
-	"golang.org/x/net/context"
+	"runtime"
 
-	//  "log"
+	"golang.org/x/net/context"
 )
 
 var routeList map[string][]routeInfo
 
 func Init() {
-	log.Println("route init")
 	routeList = make(map[string][]routeInfo)
 }
 
@@ -24,18 +22,18 @@ func parseRule(rule string) (*regexp.Regexp, []string, error) {
 	// 提取字符 key
 	re, err := regexp.Compile(":([^/]+)")
 	if err != nil {
-		log.Println(err)
+		log.Panic(err)
 		return re, nameList, err
 	}
 	tmpList := re.FindAllStringSubmatch(rule, -1)
 	for _, v := range tmpList {
-		log.Println(v)
+		// log.Println(v)
 		nameList = append(nameList, v[1])
 	}
-	log.Println(nameList)
-	log.Println("rule " + rule)
-	log.Println(tmpList)
-	log.Println(re.ReplaceAllString(rule, "([^/]+)"))
+	////log.Println(nameList)
+	////log.Println("rule " + rule)
+	////log.Println(tmpList)
+	////log.Println(re.ReplaceAllString(rule, "([^/]+)"))
 	// 构造匹配用的正则
 	ruleReg := re.ReplaceAllString(rule, "([^/]+)")
 	ruleReg = "^" + ruleReg + "$"
@@ -47,16 +45,12 @@ func parseRule(rule string) (*regexp.Regexp, []string, error) {
 }
 
 func App(port string) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	mux := &CustomMux{}
-	log.Print("before bind")
-	log.Println("bind port")
 	err := http.ListenAndServe(":"+port, mux) //设置监听的端口
 	if err != nil {
 		log.Print("error")
 	}
-	log.Println("after bind port")
-	log.Println("after bind")
-	runtime.Gosched()
 	return
 }
 
@@ -94,12 +88,10 @@ func File(prefix string, dir string) {
 	method := "GET"
 	_, exist := routeList[method]
 	if !exist {
-		log.Println(method)
 		routeList[method] = []routeInfo{}
 	}
 
 	fn := func(ctx FwContext) {
-		log.Println("file route")
 		w := ctx.Res()
 		r := ctx.Req()
 
@@ -119,18 +111,15 @@ func File(prefix string, dir string) {
 
 func add(method, pattern string, fn ControllerType) {
 
-	log.Println("start " + method)
 	reg, nameList, err := parseRule(pattern)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	log.Println(reg)
 	rInfo := routeInfo{regex: reg, controller: fn, nameList: nameList}
 
 	_, exist := routeList[method]
 	if !exist {
-		log.Println(method)
 		routeList[method] = []routeInfo{}
 	}
 
@@ -151,8 +140,6 @@ type CustomMux struct {
 }
 
 func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Println(routeList)
-	log.Println("method" + r.Method)
 	list, exist := routeList[r.Method]
 	if !exist {
 		http.NotFound(w, r)
@@ -179,6 +166,5 @@ func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	// log.Fprintf(w, "Method eq "+r.Method)
 	return
 }
