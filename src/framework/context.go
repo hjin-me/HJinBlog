@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"text/template"
+	"path/filepath"
 
 	"golang.org/x/net/context"
 )
@@ -18,6 +17,7 @@ type FwContext interface {
 	Params() map[string]string
 	Output(interface{}, string)
 	Json(interface{})
+	Tpl(string, interface{})
 }
 
 type httpContext struct {
@@ -71,16 +71,15 @@ func (c *httpContext) Json(data interface{}) {
 	}
 }
 
-func (c *httpContext) Tpl(data interface{}, path string) {
-	res := c.Res()
-	viewBase := os.Getenv("GOVIEW")
-	tpl := viewBase + path
-	texec := template.Must(template.ParseFiles(tpl))
+func (c *httpContext) Tpl(path string, data interface{}) {
+	tpl := filepath.Join(c.tpl, path)
+	t := LoadTpl(tpl)
 	select {
 	case <-c.Done():
 		log.Println("request timeout", c.Err())
 	default:
-		texec.Execute(res, data)
-
+		h := c.Res().Header()
+		h.Add("content-type", "text/html")
+		t.Execute(c.Res(), data)
 	}
 }
