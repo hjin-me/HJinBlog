@@ -30,8 +30,8 @@ func TestCustomMuxHttpHandle(t *testing.T) {
 	testStr := `{"x":"abc"}`
 	testContentType := "application/json"
 
-	Init()
-	Get("/test/:x", func(ctx FwContext) {
+	initial()
+	Get("/test/:x", func(ctx Context) {
 		ctx.Json(ctx.Params())
 	})
 	cm := &CustomMux{}

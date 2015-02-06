@@ -18,10 +18,6 @@ import (
 
 var routeList map[string][]routeInfo
 
-func Init() {
-	routeList = make(map[string][]routeInfo)
-}
-
 type AppCfg struct {
 	Env struct {
 		Port  string
@@ -81,20 +77,28 @@ func parseRule(rule string) (*regexp.Regexp, []string, error) {
 
 var appConfig AppCfg
 
-func App(port string) {
+func initial() context.Context {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	Init()
+	routeList = make(map[string][]routeInfo)
 
-	var confFilename string
-	flag.StringVar(&confFilename, "c", "./app.yaml", "server configuration")
+	return context.Background()
+}
+func App() context.Context {
+	ctx := initial()
 
-	appConfig := loadCfg(confFilename)
-	mux := &CustomMux{}
-	err := http.ListenAndServe(":"+appConfig.Env.Port, mux) //设置监听的端口
-	if err != nil {
-		log.Print("error")
-	}
-	return
+	go func() {
+		var confFilename string
+		flag.StringVar(&confFilename, "c", "./app.yaml", "server configuration")
+		flag.Parse()
+
+		appConfig := loadCfg(confFilename)
+		mux := &CustomMux{}
+		err := http.ListenAndServe(":"+appConfig.Env.Port, mux) //设置监听的端口
+		if err != nil {
+			log.Print("error")
+		}
+	}()
+	return ctx
 }
 
 func Put(pattern string, fn ControllerType) {
@@ -134,7 +138,7 @@ func File(prefix string, dir string) {
 		routeList[method] = []routeInfo{}
 	}
 
-	fn := func(ctx FwContext) {
+	fn := func(ctx Context) {
 		w := ctx.Res()
 		r := ctx.Req()
 
@@ -175,7 +179,7 @@ type routeInfo struct {
 	nameList   []string
 }
 
-type ControllerType func(ctx FwContext)
+type ControllerType func(ctx Context)
 
 type controllerType func(http.ResponseWriter, *http.Request)
 

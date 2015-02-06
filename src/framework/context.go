@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-type FwContext interface {
+type Context interface {
 	context.Context
 	Res() http.ResponseWriter
 	Req() *http.Request
@@ -28,7 +28,7 @@ type httpContext struct {
 	tpl string
 }
 
-func WithHttp(parent context.Context, w http.ResponseWriter, r *http.Request, p map[string]string, tpl string) FwContext {
+func WithHttp(parent context.Context, w http.ResponseWriter, r *http.Request, p map[string]string, tpl string) Context {
 	return &httpContext{parent, w, r, p, tpl}
 }
 
