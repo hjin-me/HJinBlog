@@ -1,6 +1,7 @@
 package main
 
 import (
+	post "actions/post"
 	"framework"
 	"log"
 )
@@ -14,8 +15,7 @@ func main() {
 
 	ctx := fw.App()
 	// route init
-	fw.Get("/a", func(ctx fw.Context) {
-	})
+	fw.Get("/post/:id", post.Read)
 
 	<-ctx.Done()
 }

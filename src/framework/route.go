@@ -209,9 +209,13 @@ func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if len(res) > 0 {
-			v.controller(WithHttp(ctx, w, r, params, appConfig.Env.Tpl))
+			go func() {
+				v.controller(WithHttp(ctx, w, r, params, appConfig.Env.Tpl))
+				cancel()
+			}()
 			break
 		}
 	}
+	<-ctx.Done()
 	return
 }
