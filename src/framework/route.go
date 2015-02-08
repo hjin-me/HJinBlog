@@ -44,6 +44,19 @@ func loadCfg(filename string) (cfg AppCfg) {
 	if err != nil {
 		log.Fatalln("load config fail", err)
 	}
+
+	cfg.Env.Tpl, err = filepath.Abs(cfg.Env.Tpl)
+	if err != nil {
+		log.Fatalln("conf tpl is illegal", err)
+	}
+
+	fi, err := os.Lstat(cfg.Env.Tpl)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	if !fi.IsDir() {
+		log.Fatalf("%s: should be directory\n", cfg.Env.Tpl)
+	}
 	return
 
 }
@@ -159,7 +172,6 @@ func File(prefix string, dir string) {
 	rInfo := routeInfo{regex: reg, controller: fn, nameList: nameList}
 	routeList[method] = append(routeList[method], rInfo)
 }
-
 func add(method, pattern string, fn ControllerType) {
 
 	reg, nameList, err := parseRule(pattern)
