@@ -75,27 +75,31 @@ func parseRule(rule string) (*regexp.Regexp, []string, error) {
 	return reg, nameList, nil
 }
 
-var appConfig AppCfg
-
-func initial() context.Context {
+func initial() *MuxContext {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	routeList = make(map[string][]routeInfo)
 
-	return context.Background()
+	var confFilename string
+	flag.StringVar(&confFilename, "c", "./app.yaml", "server configuration")
+	flag.Parse()
+
+	cfg := loadCfg(confFilename)
+
+	return &MuxContext{context.WithValue(context.Background(), "cfg", cfg)}
 }
+
 func App() context.Context {
 	ctx := initial()
 
 	go func() {
-		var confFilename string
-		flag.StringVar(&confFilename, "c", "./app.yaml", "server configuration")
-		flag.Parse()
-
-		appConfig := loadCfg(confFilename)
-		mux := &CustomMux{}
-		err := http.ListenAndServe(":"+appConfig.Env.Port, mux) //设置监听的端口
+		cfg, ok := ctx.Value("cfg").(AppCfg)
+		if !ok {
+			log.Print("configuration not ok")
+			return
+		}
+		err := http.ListenAndServe(":"+cfg.Env.Port, ctx) //设置监听的端口
 		if err != nil {
-			log.Print("error")
+			log.Print(err)
 		}
 	}()
 	return ctx
@@ -183,10 +187,11 @@ type ControllerType func(ctx Context)
 
 type controllerType func(http.ResponseWriter, *http.Request)
 
-type CustomMux struct {
+type MuxContext struct {
+	context.Context
 }
 
-func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p *MuxContext) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	list, exist := routeList[r.Method]
 	if !exist {
 		http.NotFound(w, r)
@@ -194,7 +199,7 @@ func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var ctx context.Context
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(p, 5*time.Second)
 	defer cancel()
 
 	for _, v := range list {
@@ -210,7 +215,7 @@ func (p *CustomMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		if len(res) > 0 {
 			go func() {
-				v.controller(WithHttp(ctx, w, r, params, appConfig.Env.Tpl))
+				v.controller(WithHttp(ctx, w, r, params))
 				cancel()
 			}()
 			break

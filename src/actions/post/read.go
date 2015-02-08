@@ -2,6 +2,12 @@ package actions
 
 import "framework"
 
+type Post struct {
+	Title   string
+	Context string
+}
+
 func Read(ctx fw.Context) {
-	ctx.Output("hehe", "text/plain")
+	x := Post{"this is title", "this is content"}
+	ctx.Tpl("test.tpl", x)
 }

@@ -14,6 +14,7 @@ func main() {
 	}()
 
 	ctx := fw.App()
+	log.Println("server started")
 	// route init
 	fw.Get("/post/:id", post.Read)
 

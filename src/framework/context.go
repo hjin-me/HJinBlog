@@ -22,14 +22,13 @@ type Context interface {
 
 type httpContext struct {
 	context.Context
-	w   http.ResponseWriter
-	r   *http.Request
-	p   map[string]string
-	tpl string
+	w http.ResponseWriter
+	r *http.Request
+	p map[string]string
 }
 
-func WithHttp(parent context.Context, w http.ResponseWriter, r *http.Request, p map[string]string, tpl string) Context {
-	return &httpContext{parent, w, r, p, tpl}
+func WithHttp(parent context.Context, w http.ResponseWriter, r *http.Request, p map[string]string) Context {
+	return &httpContext{parent, w, r, p}
 }
 
 func (c *httpContext) Res() http.ResponseWriter {
@@ -72,7 +71,13 @@ func (c *httpContext) Json(data interface{}) {
 }
 
 func (c *httpContext) Tpl(path string, data interface{}) {
-	tpl := filepath.Join(c.tpl, path)
+	cfg, ok := c.Value("cfg").(AppCfg)
+	if !ok {
+		log.Println("configuration is not ok")
+		c.Output("configuration err", "text/plain")
+		return
+	}
+	tpl := filepath.Join(cfg.Env.Tpl, path)
 	t := LoadTpl(tpl)
 	select {
 	case <-c.Done():
