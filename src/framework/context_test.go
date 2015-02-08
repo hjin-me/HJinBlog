@@ -21,7 +21,7 @@ func TestFwContextOutput(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rawCtx, _ := context.WithTimeout(context.Background(), time.Second)
 
-		ctx := WithHttp(rawCtx, w, r, map[string]string{}, ".")
+		ctx := WithHttp(rawCtx, w, r, map[string]string{})
 		ctx.Output(testStr, testContentType)
 	}))
 	defer ts.Close()
@@ -62,7 +62,7 @@ func TestFwContextJSON(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rawCtx, _ := context.WithTimeout(context.Background(), time.Second)
 
-		ctx := WithHttp(rawCtx, w, r, map[string]string{}, ".")
+		ctx := WithHttp(rawCtx, w, r, map[string]string{})
 		ctx.Json(testData)
 	}))
 	defer ts.Close()
@@ -108,7 +108,7 @@ func TestFwContextTpl5xx(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rawCtx, _ := context.WithTimeout(context.Background(), time.Second)
 
-		ctx := WithHttp(rawCtx, w, r, map[string]string{}, ".")
+		ctx := WithHttp(rawCtx, w, r, map[string]string{})
 		ctx.Tpl("abc.tpl", testData)
 	}))
 	defer ts.Close()
@@ -154,7 +154,7 @@ func TestFwContextTpl(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rawCtx, _ := context.WithTimeout(context.Background(), time.Second)
 
-		ctx := WithHttp(rawCtx, w, r, map[string]string{}, ".")
+		ctx := WithHttp(rawCtx, w, r, map[string]string{})
 		ctx.Tpl("abc.tpl", testData)
 	}))
 	defer ts.Close()

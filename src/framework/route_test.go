@@ -34,7 +34,7 @@ func TestCustomMuxHttpHandle(t *testing.T) {
 	Get("/test/:x", func(ctx Context) {
 		ctx.Json(ctx.Params())
 	})
-	cm := &CustomMux{}
+	cm := &MuxContext{}
 
 	ts := httptest.NewServer(http.HandlerFunc(cm.ServeHTTP))
 	defer ts.Close()

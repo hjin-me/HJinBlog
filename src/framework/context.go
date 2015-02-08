@@ -78,13 +78,12 @@ func (c *httpContext) Tpl(path string, data interface{}) {
 		return
 	}
 	tpl := filepath.Join(cfg.Env.Tpl, path)
-	t := LoadTpl(tpl)
 	select {
 	case <-c.Done():
 		log.Println("request timeout", c.Err())
 	default:
 		h := c.Res().Header()
 		h.Add("content-type", "text/html")
-		t.Execute(c.Res(), data)
+		Render(c.Res(), tpl, data)
 	}
 }

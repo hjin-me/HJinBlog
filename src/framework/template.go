@@ -2,12 +2,11 @@ package fw
 
 import (
 	"html/template"
+	"io"
+	"io/ioutil"
 	"log"
 )
 
-type templateCache map[string]*template.Template
-
-var tc = templateCache{}
 var t5xx *template.Template
 
 func Load5xx() *template.Template {
@@ -20,16 +19,24 @@ func Load5xx() *template.Template {
 }
 
 func LoadTpl(path string) *template.Template {
-	if t, ok := tc[path]; ok {
-		return t
-	}
-	t, err := template.ParseFiles(path)
+	var err error
+	tc := template.New(path)
+	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Println("load tpl failed", err)
 		return Load5xx()
 	}
+	s := string(b)
 
-	tc[path] = t
+	tc, err = tc.Parse(s)
+	if err != nil {
+		log.Println("load tpl failed", err)
+		return Load5xx()
+	}
+	return tc
+}
 
-	return t
+func Render(w io.Writer, path string, data interface{}) {
+	t := LoadTpl(path)
+	t.ExecuteTemplate(w, path, data)
 }
