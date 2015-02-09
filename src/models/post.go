@@ -2,88 +2,85 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
+	"html/template"
+	"log"
+	"strings"
 	"time"
 
-	"github.com/syndtr/goleveldb/leveldb"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/garyburd/redigo/redis"
 )
 
-type Article struct {
-	Id          string `json:"id"`
-	Alias       string `json:"alias"`
-	Content     string
-	Category    string
-	Pubtime     int32
+type Post struct {
+	Id          string
 	Title       string
+	Content     template.HTML
+	Keywords    Keywords
 	Description string
-	Tags        []string
-	Keywords    []string
+	PubTime     time.Time
+}
+type Keywords []Keyword
+
+func (ks Keywords) String() string {
+	tmps := make([]string, len(ks))
+	for i, v := range ks {
+		tmps[i] = string(v)
+	}
+	return strings.Join(tmps, ",")
+}
+func (kw Keywords) Marshal() string {
+	ret, err := json.Marshal(kw)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return string(ret)
+}
+func (kw *Keywords) Unmarshal(str string) {
+	err := json.Unmarshal([]byte(str), kw)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
-var dbIns *leveldb.DB
+type Keyword string
 
-func getLevelIns() *leveldb.DB {
-	if dbIns != nil {
-		return dbIns
-	}
-	dbPath := os.Getenv("GOPATH") + "/src/db"
-	db, err := leveldb.OpenFile(dbPath, nil)
-	if err != nil {
-		dbIns = nil
-		panic(err)
-	}
-	dbIns = db
-	fmt.Println("leveldb get")
-	return dbIns
+func (k Keyword) Alias() string {
+	return strings.ToLower(string(k))
 }
 
-var ErrNotFound = leveldb.ErrNotFound
-
-func Read(id string) (art Article, err error) {
-	t := time.Now()
-	start := t.UnixNano()
-	db := getLevelIns()
-	fmt.Println("level db got", id)
-
-	data, err := db.Get([]byte(id), nil)
-	if err == leveldb.ErrNotFound {
-		return
-	}
+func (p Post) Save() {
+	conn, err := redis.Dial("tcp", "10.211.55.8:6379")
 	if err != nil {
-		// log.Fatal(err)
-		return
+		log.Fatalln(err)
 	}
-
-	t = time.Now()
-	end := t.UnixNano()
-	json.Unmarshal(data, &art)
-
-	fmt.Println(art)
-	fmt.Printf("%d - %d = %d", end, start, (end-start)/1000)
-	return art, nil
+	defer conn.Close()
+	conn.Do("hmset", p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content),
+		"keywords", p.Keywords.Marshal(), "description", p.Description, "pubtime", p.PubTime.Unix())
 }
 
-func ReadBatch() (arts []Article, err error) {
-	db := getLevelIns()
-
-	iter := db.NewIterator(util.BytesPrefix([]byte("archive-")), nil)
-	for iter.Next() {
-		// Remember that the contents of the returned slice should not be modified, and
-		// only valid until the next call to Next.
-		art := Article{}
-		json.Unmarshal(iter.Value(), &art)
-		arts = append(arts, art)
-	}
-	iter.Release()
-	if err == leveldb.ErrNotFound {
-		return
-	}
+func Read(id string) Post {
+	conn, err := redis.Dial("tcp", "10.211.55.8:6379")
 	if err != nil {
-		// log.Fatal(err)
-		return
+		log.Fatalln(err)
 	}
-
-	return
+	defer conn.Close()
+	reply, err := conn.Do("hmget", id, "id", "title", "content",
+		"keywords", "description", "pubtime")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	tarr, ok := reply.([]interface{})
+	if !ok {
+		log.Fatalln("convert to arr failed")
+	}
+	p := Post{}
+	p.Id, _ = redis.String(tarr[0], nil)
+	p.Title, _ = redis.String(tarr[1], nil)
+	content, _ := redis.String(tarr[2], nil)
+	p.Content = template.HTML(content)
+	kw, _ := redis.String(tarr[3], nil)
+	p.Keywords.Unmarshal(kw)
+	p.Description, _ = redis.String(tarr[4], nil)
+	t, _ := redis.Int64(tarr[5], nil)
+	p.PubTime = time.Unix(t, 0)
+	return p
 }
