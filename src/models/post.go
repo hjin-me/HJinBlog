@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"db"
+
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -48,22 +50,12 @@ func (k Keyword) Alias() string {
 }
 
 func (p Post) Save() {
-	conn, err := redis.Dial("tcp", "10.211.55.8:6379")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer conn.Close()
-	conn.Do("hmset", p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content),
+	db.Do("hmset", p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content),
 		"keywords", p.Keywords.Marshal(), "description", p.Description, "pubtime", p.PubTime.Unix())
 }
 
 func Read(id string) Post {
-	conn, err := redis.Dial("tcp", "10.211.55.8:6379")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer conn.Close()
-	reply, err := conn.Do("hmget", id, "id", "title", "content",
+	reply, err := db.Do("hmget", id, "id", "title", "content",
 		"keywords", "description", "pubtime")
 	if err != nil {
 		log.Fatalln(err)

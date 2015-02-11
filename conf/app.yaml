@@ -3,3 +3,4 @@ env:
     level: development
     statics : statics
     tpl: views
+    db: 10.211.55.8:6379

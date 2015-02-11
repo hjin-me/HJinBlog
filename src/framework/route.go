@@ -23,6 +23,7 @@ type AppCfg struct {
 		Port  string
 		Level string
 		Tpl   string
+		Db    string
 	}
 }
 
