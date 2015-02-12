@@ -8,12 +8,6 @@ import (
 )
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Fatalf("Recovered in main %v\n", r)
-		}
-	}()
-
 	ctx := fw.App()
 	log.Println("server started")
 	cfg, ok := ctx.Value("cfg").(fw.AppCfg)
