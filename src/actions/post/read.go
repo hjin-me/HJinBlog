@@ -6,6 +6,8 @@ import (
 )
 
 func Read(ctx fw.Context) {
-	x := models.Read("761")
-	ctx.Tpl("post.html", x)
+	if id, ok := ctx.Params()["id"]; ok {
+		x := models.Read(id)
+		ctx.Tpl("post.html", x)
+	}
 }

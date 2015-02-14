@@ -16,6 +16,7 @@ type Post struct {
 	Id          string
 	Title       string
 	Content     template.HTML
+	Category    string
 	Keywords    Keywords
 	Description string
 	PubTime     time.Time
@@ -75,4 +76,8 @@ func Read(id string) Post {
 	t, _ := redis.Int64(tarr[5], nil)
 	p.PubTime = time.Unix(t, 0)
 	return p
+}
+
+func New() Post {
+	return Post{}
 }

@@ -38,7 +38,7 @@ func Connect(redisServer string) error {
 	return nil
 }
 
-func Close(conn redis.Conn) {
+func Close() {
 	close(ch)
 }
 
