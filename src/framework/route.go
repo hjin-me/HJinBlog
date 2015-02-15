@@ -20,10 +20,11 @@ var routeList map[string][]routeInfo
 
 type AppCfg struct {
 	Env struct {
-		Port  string
-		Level string
-		Tpl   string
-		Db    string
+		ConfRoot string
+		Port     string
+		Level    string
+		Tpl      string
+		Db       string
 	}
 }
 
@@ -37,6 +38,9 @@ func loadCfg(filename string) (cfg AppCfg) {
 		log.Fatalln("open config file failed", err)
 	}
 	defer f.Close()
+
+	cfg.Env.ConfRoot = filepath.Dir(filename)
+
 	bf, err := ioutil.ReadAll(f)
 	if err != nil {
 		log.Fatalln("read config file failed", err)
@@ -46,7 +50,7 @@ func loadCfg(filename string) (cfg AppCfg) {
 		log.Fatalln("load config fail", err)
 	}
 
-	cfg.Env.Tpl, err = filepath.Abs(cfg.Env.Tpl)
+	cfg.Env.Tpl = filepath.Join(cfg.Env.ConfRoot, cfg.Env.Tpl)
 	if err != nil {
 		log.Fatalln("conf tpl is illegal", err)
 	}
