@@ -53,7 +53,7 @@ func checkSort(ps []Post) bool {
 
 	for i := 0; i < len(ps); i++ {
 		for j := i; j < len(ps); j++ {
-			if ps[i].PubTime.After(ps[j].PubTime) {
+			if ps[i].PubTime.Before(ps[j].PubTime) {
 				return false
 			}
 		}

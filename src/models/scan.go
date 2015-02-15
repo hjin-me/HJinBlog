@@ -1,9 +1,6 @@
 package models
 
-import (
-	"db"
-	"log"
-)
+import "db"
 
 func Scan() (ps []Post, err error) {
 	for id := range db.Scan() {
@@ -14,13 +11,13 @@ func Scan() (ps []Post, err error) {
 	if err = db.Err(); err != nil {
 		return
 	}
+	sort(ps)
 
 	return
 }
 
 func sort(ps []Post) {
 	if len(ps) <= 1 {
-		log.Println("cant divide")
 		return
 	}
 
@@ -33,7 +30,7 @@ func sort(ps []Post) {
 	curr = 1
 	last = 1
 	for last < len(ps) {
-		if ps[tgt].PubTime.After(ps[last].PubTime) {
+		if ps[tgt].PubTime.Before(ps[last].PubTime) {
 			if last > curr {
 				ps[tgt], ps[curr], ps[last] = ps[last], ps[tgt], ps[curr]
 			} else {
