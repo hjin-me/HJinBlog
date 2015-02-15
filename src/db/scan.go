@@ -11,7 +11,7 @@ func Err() error {
 	return lastErr
 }
 
-func redisScan(ch chan interface{}, cursor []byte) {
+func redisScan(ch chan []byte, cursor []byte) {
 	reply, err := Do("scan", cursor)
 	if err != nil {
 		lastErr = err
@@ -55,9 +55,9 @@ func redisScan(ch chan interface{}, cursor []byte) {
 	redisScan(ch, cursor)
 }
 
-func Scan() chan interface{} {
+func Scan() chan []byte {
 
-	ch := make(chan interface{})
+	ch := make(chan []byte)
 	go func() {
 		redisScan(ch, []byte("0"))
 	}()
