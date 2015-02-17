@@ -25,6 +25,7 @@ type AppCfg struct {
 		Level    string
 		Tpl      string
 		Db       string
+		Statics  string
 	}
 }
 
@@ -61,6 +62,19 @@ func loadCfg(filename string) (cfg AppCfg) {
 	}
 	if !fi.IsDir() {
 		log.Fatalf("%s: should be directory\n", cfg.Env.Tpl)
+	}
+
+	cfg.Env.Statics = filepath.Join(cfg.Env.ConfRoot, cfg.Env.Statics)
+	if err != nil {
+		log.Fatalln("conf tpl is illegal", err)
+	}
+
+	fi, err = os.Lstat(cfg.Env.Statics)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	if !fi.IsDir() {
+		log.Fatalf("%s: should be directory\n", cfg.Env.Statics)
 	}
 	return
 

@@ -13,8 +13,8 @@
   <meta name="google-site-verification" content="3V7PwDBKWM8l1JrLHI7FnpS-90cOnyDUQTNHU0xQHiA">
   <link rel="shortcut icon" type="image/ico" href="//hjin-me.bcs.duapp.com/resource/img/favicon.ico">
   <title>{{.Title}} | @HJin_me's Blog</title>
-  <link rel="stylesheet" href="//huangj.in/css/normalize.min.css">
-  <link rel="stylesheet" href="//huangj.in/css/clearness.css">
+  <link rel="stylesheet" href="/statics/normalize.min.css">
+  <link rel="stylesheet" href="/statics/clearness.css">
 </head>
 <!-- !Body-->
 <body>
@@ -25,14 +25,6 @@
         <a href="/" id="title" title="HJin.me" class="blog-title">@HJin_me's Blog</a>
     </h1>
     <small class="description">技术，生活，苹果，送送</small>
-    <nav>
-      <ul id="blog-menu" class="hidden-phone">
-        <li class="page_item"><a href="/category/live">日常生活</a></li>
-        <li class="page_item"><a href="/category/it">技术分享</a></li>
-        <li class="page_item"><a href="/category/chat">乱说</a></li>
-        <li class="page_item"><a href="/about">我</a></li>
-      </ul>
-    </nav>
   </header>
 </div>
 <div class="main-container">
@@ -47,11 +39,6 @@
       <div class="entry">{{.Content | md}}</div>
       <aside class="metas">
         <ul class="semantic-list">
-          <li class="category"><h3>Category</h3>
-            <ul class="semantic-list">
-              <li><a href="/category/it">技术分享.It</a></li>
-            </ul>
-          </li>
           <li class="tags smallscreenhide"><h3>Tags</h3>
             <ul class="semantic-list">
               {{range .Keywords}}
