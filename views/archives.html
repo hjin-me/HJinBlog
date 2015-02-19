@@ -11,9 +11,8 @@
   <meta name="apple-mobile-web-app-title" content="@HJin_me's Blog">
   <meta name="format-detection" content="telephone=no">
   <meta name="google-site-verification" content="3V7PwDBKWM8l1JrLHI7FnpS-90cOnyDUQTNHU0xQHiA">
-  <title>@HJin_me's Blog</title>
+  <title>Archives | @HJin_me's Blog</title>
   <link rel="stylesheet" href="/statics/normalize.min.css">
-  <link rel="stylesheet" href="/statics/clearness.css">
 </head>
 <!-- !Body-->
 <body>
@@ -32,7 +31,7 @@
       <h3>{{.Year}}</h3>
       <ul>
           {{range .List}}
-          <li>{{.Title}}</li>
+          <li><a href="/post/{{.Id}}">{{.Title}}</a></li>
           {{end}}
       </ul>
       {{end}}
@@ -47,29 +46,6 @@
     </p>
   </footer>
 </div>
-<script>if (window.screen.height < 650 && window.screen.width < 650) {
-  var scroll = 1
-  if (document.querySelector) {
-    scroll = document.querySelector('.header-container').clientHeight
-  }
-  window.scrollTo(0, scroll)
-}
-
-// pretty print
-var pp = document.createElement('script');
-pp.type = 'text/javascript';
-pp.async = true;
-pp.src = "//huangjin.duapp.com/js/tools.js";
-var s = document.getElementsByTagName('script')[0];
-s.parentNode.insertBefore(pp, s);
-</script>
-<script>var disqus_shortname = 'hjin';
-    var disqus_identifier = 'huangj.in_{{.Id}}';
-var dsq = document.createElement('script');
-dsq.type = 'text/javascript';
-dsq.async = true;
-dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-document.getElementsByTagName('head')[0].appendChild(dsq)</script>
 </body>
 </html>
 

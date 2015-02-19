@@ -22,7 +22,7 @@ func main() {
 	// route init
 	fw.Get("/post/:id", post.Read)
 	fw.File("/statics", cfg.Env.Statics)
-	fw.Get("/", post.Scan)
+	fw.Get("/archives", post.Scan)
 
 	<-ctx.Done()
 }

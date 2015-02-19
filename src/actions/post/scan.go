@@ -30,5 +30,5 @@ func Scan(ctx fw.Context) {
 		}
 		ta[y2i[y]].List = append(ta[y2i[y]].List, p)
 	}
-	ctx.Tpl("list.html", ta)
+	ctx.Tpl("archives.html", ta)
 }
