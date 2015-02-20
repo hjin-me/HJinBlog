@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="author" content="HJin.me">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="robots" content="index,follow">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=3, minimum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-title" content="@HJin_me's Blog">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="google-site-verification" content="3V7PwDBKWM8l1JrLHI7FnpS-90cOnyDUQTNHU0xQHiA">
+  <title>@HJin_me's Blog</title>
+  <link rel="stylesheet" href="/statics/normalize.min.css">
+</head>
+<!-- !Body-->
+<body>
+<!-- !header-container-->
+<div class="header-container">
+    <header class="wrapper clearfix">
+    <h1 class="title">
+        <a href="/" id="title" title="HJin.me" class="blog-title">@HJin_me's Blog</a>
+    </h1>
+    <small class="description">技术，生活，苹果，送送</small>
+  </header>
+</div>
+<div class="main-container">
+  <div class="main wrapper clearfix">
+      {{range .}}
+      <h3>{{.Year}}</h3>
+      <ul>
+          {{range .List}}
+          <li><a href="/post/{{.Id}}">{{.Title}}</a></li>
+          {{end}}
+      </ul>
+      {{end}}
+  </div>
+</div>
+<div class="footer-container">
+  <footer class="wrapper">
+    <p>
+      <small>&copy; 2007 - 2015 HJin.me</small>
+      <br>
+      <small><a href="http://hjin.me">HJin.me</a> Powered by <a href="https://github.com/hjin-me/HJinBlog">HJinBlog</a></small>
+    </p>
+  </footer>
+</div>
+</body>
+</html>
+
