@@ -8,7 +8,7 @@ import (
 
 type TimeArchive struct {
 	Year int
-	List []models.Post
+	List []models.Archive
 }
 
 func Scan(ctx fw.Context) {

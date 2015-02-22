@@ -22,7 +22,23 @@ func (a Archive) String() string {
 	return string(s)
 }
 
-func Clean() error {
+func (a *Archive) Unmarshal(b []byte) {
+	x := make(map[string]interface{})
+	err := json.Unmarshal(b, a)
+	if err != nil {
+		log.Println(err)
+	}
+	if pt, ok := x["PubTime"]; ok {
+		if t, ok := pt.(int64); ok {
+			a.PubTime = time.Unix(t, 0)
+		}
+	} else {
+		log.Println("PubTime key not exists")
+	}
+
+}
+
+func Rebuild() error {
 	ps, err := Scan()
 	if err != nil {
 		return err
