@@ -12,7 +12,7 @@ type TimeArchive struct {
 }
 
 func Scan(ctx fw.Context) {
-	posts, err := models.Scan()
+	posts, err := models.ZScan("pubtime")
 	if err != nil {
 		log.Fatal(err)
 	}
