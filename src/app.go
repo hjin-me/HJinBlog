@@ -23,6 +23,7 @@ func main() {
 	fw.Get("/post/:id", post.Read)
 	fw.File("/statics", cfg.Env.Statics)
 	fw.Get("/archives", post.Scan)
+	fw.Get("/", post.Scan)
 
 	<-ctx.Done()
 }
