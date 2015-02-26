@@ -14,9 +14,9 @@ func Read(ctx fw.Context) {
 }
 
 func Latest(ctx fw.Context) {
-	posts, err := models.ZRange("pubtime", 0, 5)
+	posts, err := models.ZRange("pubtime", 0, 4)
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx.Json(posts)
+	ctx.Tpl("home.html", posts)
 }
