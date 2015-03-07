@@ -1,9 +1,10 @@
 package actions
 
 import (
-	"framework"
 	"log"
 	"models"
+
+	"github.com/hjin-me/banana"
 )
 
 type TimeArchive struct {
@@ -11,7 +12,7 @@ type TimeArchive struct {
 	List []models.Archive
 }
 
-func Scan(ctx fw.Context) {
+func Scan(ctx banana.Context) {
 	posts, err := models.ZScan("pubtime")
 	if err != nil {
 		log.Fatal(err)

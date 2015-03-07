@@ -1,19 +1,20 @@
 package actions
 
 import (
-	"framework"
 	"log"
 	"models"
+
+	"github.com/hjin-me/banana"
 )
 
-func Read(ctx fw.Context) {
+func Read(ctx banana.Context) {
 	if id, ok := ctx.Params()["id"]; ok {
 		x := models.Read(id)
 		ctx.Tpl("post.html", x)
 	}
 }
 
-func Latest(ctx fw.Context) {
+func Latest(ctx banana.Context) {
 	posts, err := models.ZRange("pubtime", 0, 4)
 	if err != nil {
 		log.Fatal(err)
