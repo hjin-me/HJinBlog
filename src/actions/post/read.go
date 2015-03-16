@@ -9,7 +9,7 @@ import (
 
 func Read(ctx banana.Context) {
 	if id, ok := ctx.Params()["id"]; ok {
-		x := models.Read(id)
+		x := models.Read("post-" + id)
 		ctx.Tpl("post.html", x)
 	}
 }

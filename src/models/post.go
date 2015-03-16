@@ -33,14 +33,16 @@ func (ks Keywords) String() string {
 func (kw Keywords) Marshal() string {
 	ret, err := json.Marshal(kw)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		panic(err)
 	}
 	return string(ret)
 }
 func (kw *Keywords) Unmarshal(str string) {
 	err := json.Unmarshal([]byte(str), kw)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		panic(err)
 	}
 }
 

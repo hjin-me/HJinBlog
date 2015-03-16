@@ -17,6 +17,7 @@ func TestPostSave(t *testing.T) {
 	p := New()
 	p.Id = "1"
 	p.Title = "这是一篇测试文章"
+	p.Keywords = []Keyword{}
 	p.Content = `# Dillinger
 
 Dillinger is a cloud-enabled, mobile-ready, offline-storage, AngularJS powered HTML5 Markdown editor.
@@ -135,5 +136,11 @@ MIT
 	p.Save()
 
 	Rebuild()
+
+}
+
+func TestPostRead(t *testing.T) {
+	p := Read("post-1")
+	t.Log(p)
 
 }
