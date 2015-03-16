@@ -11,12 +11,16 @@ func Err() error {
 	return lastErr
 }
 
-func redisScan(ch chan []byte, cursor []byte) {
+func redisScan(ch chan []byte, cursor []byte, args ...string) {
 	var (
 		reply interface{}
 		err   error
 	)
-	reply, err = Do("scan", cursor)
+	if len(args) == 1 {
+		reply, err = Do("scan", cursor, "MATCH", args[0]+"*")
+	} else {
+		reply, err = Do("scan", cursor)
+	}
 
 	if err != nil {
 		lastErr = err
@@ -109,11 +113,11 @@ func redisZScan(ch chan [2][]byte, cursor []byte, k string) {
 	redisZScan(ch, cursor, k)
 }
 
-func Scan() chan []byte {
+func Scan(args ...string) chan []byte {
 
 	ch := make(chan []byte)
 	go func() {
-		redisScan(ch, []byte("0"))
+		redisScan(ch, []byte("0"), args...)
 	}()
 	return ch
 }

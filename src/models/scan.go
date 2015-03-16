@@ -7,7 +7,7 @@ import (
 )
 
 func Scan() (ps []Post, err error) {
-	for id := range db.Scan() {
+	for id := range db.Scan("post-") {
 		x := Read(string(id))
 		ps = append(ps, x)
 	}

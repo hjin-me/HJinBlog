@@ -8,9 +8,10 @@ import (
 )
 
 type Archive struct {
-	Id      string
-	Title   string
-	PubTime time.Time
+	Id          string
+	Title       string
+	PubTime     time.Time
+	Description string
 }
 
 func (a Archive) String() string {
@@ -39,6 +40,7 @@ func (a *Archive) Unmarshal(b []byte) {
 }
 
 func Rebuild() error {
+
 	ps, err := Scan()
 	if err != nil {
 		return err
@@ -48,15 +50,15 @@ func Rebuild() error {
 
 	_, err = db.Do("del", zsort)
 	if err != nil {
-		log.Println(err)
+		log.Println("del", err)
 		return err
 	}
 
 	for _, p := range ps {
-		a := Archive{p.Id, p.Title, p.PubTime}
+		a := Archive{p.Id, p.Title, p.PubTime, p.Description}
 		_, err := db.Do("zadd", zsort, a.PubTime.Unix(), a)
 		if err != nil {
-			log.Println(err)
+			log.Println("zadd", err)
 			return err
 		}
 	}

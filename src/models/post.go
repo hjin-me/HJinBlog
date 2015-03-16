@@ -51,7 +51,7 @@ func (k Keyword) Alias() string {
 }
 
 func (p Post) Save() {
-	db.Do("hmset", p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content),
+	db.Do("hmset", "post-"+p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content),
 		"keywords", p.Keywords.Marshal(), "description", p.Description, "pubtime", p.PubTime.Unix())
 }
 
