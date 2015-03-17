@@ -18,6 +18,7 @@ func TestPostSave(t *testing.T) {
 	p.Id = "1"
 	p.Title = "这是一篇测试文章"
 	p.Keywords = []Keyword{}
+	p.Category = "test"
 	p.Content = `# Dillinger
 
 Dillinger is a cloud-enabled, mobile-ready, offline-storage, AngularJS powered HTML5 Markdown editor.
@@ -135,12 +136,12 @@ MIT
 	p.Title = "文章6呵呵呵呵呵呵呵额呵呵呵呵呵呵呵"
 	p.Save()
 
-	Rebuild()
+	RebuildArchive()
 
 }
 
 func TestPostRead(t *testing.T) {
-	p := Read("post-1")
+	p := Read("post:1")
 	t.Log(p)
 
 }

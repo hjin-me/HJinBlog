@@ -53,13 +53,13 @@ func (k Keyword) Alias() string {
 }
 
 func (p Post) Save() {
-	db.Do("hmset", "post-"+p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content),
-		"keywords", p.Keywords.Marshal(), "description", p.Description, "pubtime", p.PubTime.Unix())
+	db.Do("hmset", "post:"+p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content),
+		"keywords", p.Keywords.Marshal(), "description", p.Description, "pubtime", p.PubTime.Unix(), "category", p.Category)
 }
 
 func Read(id string) Post {
 	reply, err := db.Do("hmget", id, "id", "title", "content",
-		"keywords", "description", "pubtime")
+		"keywords", "description", "pubtime", "category")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -77,6 +77,7 @@ func Read(id string) Post {
 	p.Description, _ = redis.String(tarr[4], nil)
 	t, _ := redis.Int64(tarr[5], nil)
 	p.PubTime = time.Unix(t, 0)
+	p.Category, _ = redis.String(tarr[6], nil)
 	return p
 }
 

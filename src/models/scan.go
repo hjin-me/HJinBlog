@@ -6,8 +6,32 @@ import (
 	"log"
 )
 
+func ScanByPrefix(prefix string) <-chan string {
+	var (
+		err error
+		ch  = make(chan string)
+	)
+
+	go func() {
+		defer close(ch)
+
+		for key := range db.Scan(prefix) {
+
+			ch <- string(key)
+
+		}
+
+		if err = db.Err(); err != nil {
+			return
+		}
+
+	}()
+
+	return ch
+}
+
 func Scan() (ps []Post, err error) {
-	for id := range db.Scan("post-") {
+	for id := range db.Scan("post:") {
 		x := Read(string(id))
 		ps = append(ps, x)
 	}
