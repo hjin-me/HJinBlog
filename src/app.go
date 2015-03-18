@@ -2,6 +2,7 @@ package main
 
 import (
 	post "actions/post"
+	"cp"
 	"db"
 	"log"
 
@@ -15,6 +16,7 @@ func main() {
 	if !ok {
 		log.Fatalln("configuration not ok")
 	}
+	log.Println(cfg)
 	redisConf, ok := cfg.Env.Db["redis"]
 	if !ok {
 		log.Fatalln("redis conf not exits")
@@ -31,9 +33,12 @@ func main() {
 	log.Println("database connected")
 	// route init
 	banana.Get("/post/:id", post.Read)
-	banana.File("/statics", cfg.Env.Statics)
+	banana.File("/static", cfg.Env.Statics)
 	banana.Get("/archives", post.Scan)
-	banana.Get("/", post.Latest)
+	banana.Get("/cp/dashboard", cp.DashBoard)
+	banana.Get("/cp/users", cp.DashBoard)
+	banana.Get("/cp/posts", cp.Posts)
+	// banana.Get("/", post.Latest)
 
 	<-ctx.Done()
 }
