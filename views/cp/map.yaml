@@ -1,2 +1,4 @@
 dashboard: dashboard.html
 posts: posts.html
+head: head.html
+foot: foot.html
