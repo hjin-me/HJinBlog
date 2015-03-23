@@ -1,6 +1,7 @@
 package main
 
 import (
+	post "actions/post"
 	"cp"
 	"da"
 	"log"
@@ -32,9 +33,9 @@ func main() {
 	defer da.Close()
 	log.Println("database connected")
 	// route init
-	// banana.Get("/post/:id", post.Read)
+	banana.Get("/post/:id", post.Read)
 	banana.File("/static", cfg.Env.Statics)
-	// banana.Get("/archives", post.Scan)
+	banana.Get("/archives", post.Query)
 	banana.Get("/cp/dashboard", cp.DashBoard)
 	banana.Get("/cp/users", cp.DashBoard)
 	banana.Get("/cp/posts", cp.Posts)
