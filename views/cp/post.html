@@ -1,0 +1,53 @@
+{{template "head"}}
+<div class='panel panel-default'>
+    <div class='panel-heading'>
+        <i class='icon-edit icon-large'></i>
+        编辑文章
+    </div>
+    <div class='panel-body'>
+        <form>
+            <fieldset>
+                <div class='form-group'>
+                    <input class='form-control input-lg' placeholder='文章标题' type='text' value="{{.Content.Title}}">
+                </div>
+            </fieldset>
+            <fieldset>
+                <div id="epiceditor"></div>
+            </fieldset>
+            <fieldset>
+                <textarea name="post-content" id="post-content" style="display: none;">{{.Content.Content}}</textarea>
+            </fieldset>
+            <fieldset>
+                <div class='form-group'>
+                    <label class='control-label'>Single select</label>
+                    <select class='form-control'>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <div class='form-actions'>
+                <button class='btn btn-default' type='submit'>Submit</button>
+                <a class='btn' href='#'>Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/static/editor/js/epiceditor.js"></script>
+<script>
+    var opts = {
+        textarea: document.getElementById('post-content'),
+        theme: {
+            base: 'http://127.0.0.1:8088/static/editor/themes/base/epiceditor.css',
+            preview: 'http://127.0.0.1:8088/static/editor/themes/preview/github.css',
+            editor: 'http://127.0.0.1:8088/static/editor/themes/editor/epic-light.css'
+        },
+        autogrow: true
+    };
+    var editor = new EpicEditor(opts).load();
+</script>
+{{template "foot"}}

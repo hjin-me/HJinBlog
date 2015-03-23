@@ -27,10 +27,10 @@
         <tr>
             <td>{{.Title}}</td>
             <td class='action'>
-                <a class='btn btn-success' data-toggle='tooltip' href='#' title='Zoom'>
+                <a class='btn btn-success' data-toggle='tooltip' href='/post/{{.Id}}' target="_blank" title='浏览文章'>
                     <i class='icon-zoom-in'></i>
                 </a>
-                <a class='btn btn-info' href='#'>
+                <a class='btn btn-info' data-toggle='tooltip' href='/cp/post/{{.Id}}' title='编辑'>
                     <i class='icon-edit'></i>
                 </a>
                 <a class='btn btn-danger' href='#'>

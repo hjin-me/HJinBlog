@@ -39,6 +39,7 @@ func main() {
 	banana.Get("/cp/dashboard", cp.DashBoard)
 	banana.Get("/cp/users", cp.DashBoard)
 	banana.Get("/cp/posts", cp.Posts)
+	banana.Get("/cp/post/:id", cp.Post)
 	// banana.Get("/", post.Latest)
 
 	<-ctx.Done()

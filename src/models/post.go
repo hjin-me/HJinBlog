@@ -11,14 +11,19 @@ import (
 	"database/sql"
 )
 
-type Post struct {
+type RawPost struct {
 	Id          int
 	Title       string
-	Content     template.HTML
+	Content     string
 	Category    string
 	Keywords    Keywords
 	Description string
 	PubTime     time.Time
+}
+
+type Post struct {
+	RawPost
+	Content template.HTML
 }
 type Keywords []Keyword
 
@@ -91,9 +96,9 @@ func (p *Post) Save() {
 	// db.Do("hmset", "post:"+p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content), "keywords", p.Keywords.Marshal(), "description", p.Description, "pubtime", p.PubTime.Unix(), "category", p.Category)
 }
 
-func Read(id int) Post {
+func ReadRaw(id int) RawPost {
 	var (
-		p   Post
+		p   RawPost
 		err error
 	)
 	db, err := da.Connect()
@@ -120,7 +125,7 @@ func Read(id int) Post {
 		panic(err)
 	}
 	p.Id = id
-	p.Content = template.HTML(content)
+	p.Content = content
 	p.Category = category
 	p.PubTime = time.Unix(pubtime, 0)
 	p.Title = title
@@ -133,6 +138,15 @@ func Read(id int) Post {
 			p.Keywords = append(p.Keywords, Keyword(v))
 		}
 	}
+
+	return p
+
+}
+
+func Read(id int) Post {
+	pr := ReadRaw(id)
+
+	p := Post{pr, template.HTML(pr.Content)}
 
 	return p
 }
