@@ -1,7 +1,0 @@
-env:
-    port : 8088
-    level: development
-    statics : ../statics
-    tpl: ../views
-    db: 
-        redis: 10.211.55.8:6379
