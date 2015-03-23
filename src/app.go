@@ -1,9 +1,8 @@
 package main
 
 import (
-	post "actions/post"
 	"cp"
-	"db"
+	"da"
 	"log"
 
 	"github.com/hjin-me/banana"
@@ -17,24 +16,25 @@ func main() {
 		log.Fatalln("configuration not ok")
 	}
 	log.Println(cfg)
-	redisConf, ok := cfg.Env.Db["redis"]
+	dsnRaw, ok := cfg.Env.Db["mysql"]
 	if !ok {
-		log.Fatalln("redis conf not exits")
+		log.Fatalln("mysql conf not exits")
 	}
 
-	redisIp, ok := redisConf.(string)
+	dsn, ok := dsnRaw.(string)
 	if !ok {
-		log.Fatalln("redis ip error")
+		log.Fatalln("mysql dsn not ok")
 	}
-	err := db.Connect(redisIp)
+	err := da.Create(dsn)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer da.Close()
 	log.Println("database connected")
 	// route init
-	banana.Get("/post/:id", post.Read)
+	// banana.Get("/post/:id", post.Read)
 	banana.File("/static", cfg.Env.Statics)
-	banana.Get("/archives", post.Scan)
+	// banana.Get("/archives", post.Scan)
 	banana.Get("/cp/dashboard", cp.DashBoard)
 	banana.Get("/cp/users", cp.DashBoard)
 	banana.Get("/cp/posts", cp.Posts)
