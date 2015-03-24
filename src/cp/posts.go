@@ -1,18 +1,15 @@
 package cp
 
-import (
-	"models"
-
-	"github.com/hjin-me/banana"
-)
+import "github.com/hjin-me/banana"
 
 type PostLayout struct {
-	Content interface{}
+	ContentBlock string
+	Content      interface{}
 }
 
 func Posts(ctx banana.Context) {
-	posts := models.Query(0, 10)
 	layout := PostLayout{}
-	layout.Content = posts
-	ctx.Tpl("cp:page/posts.html", layout)
+	layout.ContentBlock = "cp:page/bootstrap.html"
+	layout.Content = 1
+	ctx.Tpl("cp:page/layout.html", layout)
 }

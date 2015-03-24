@@ -3,5 +3,7 @@ package cp
 import "github.com/hjin-me/banana"
 
 func DashBoard(ctx banana.Context) {
-	ctx.Tpl("cp/dashboard", nil)
+	layout := PostLayout{}
+	layout.ContentBlock = "cp:page/starter.html"
+	ctx.Tpl("cp:page/layout.html", layout)
 }
