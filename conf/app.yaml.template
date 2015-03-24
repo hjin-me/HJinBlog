@@ -1,9 +1,9 @@
 env:
     port : 8088
     level: development
-    statics : ../static
-    tpl: ../views
-    timeout: 3000000000
+    statics : ../release/static/
+    tpl: ../release/
+    timeout: 3000
     db: 
         redis: "host:port"
         mysql: "dsn"

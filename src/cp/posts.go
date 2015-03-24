@@ -14,5 +14,5 @@ func Posts(ctx banana.Context) {
 	posts := models.Query(0, 10)
 	layout := PostLayout{}
 	layout.Content = posts
-	ctx.Tpl("cp/posts", layout)
+	ctx.Tpl("cp:page/posts.html", layout)
 }
