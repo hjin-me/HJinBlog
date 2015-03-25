@@ -5,4 +5,5 @@ pkg
 test
 install
 .idea
+conf/app.yaml
 src/github.com

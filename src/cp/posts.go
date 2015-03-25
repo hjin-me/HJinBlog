@@ -8,8 +8,10 @@ type PostLayout struct {
 }
 
 func Posts(ctx banana.Context) {
-	layout := PostLayout{}
-	layout.ContentBlock = "cp:page/bootstrap.html"
-	layout.Content = 1
+	layout := ThemeLayout{}
+	layout.Header.Name = "cp:page/header.html"
+	layout.Sidebar.Name = "cp:page/sidebar.html"
+	layout.Footer.Name = "cp:page/footer.html"
+	layout.Content = ThemeBlock{"cp:page/bootstrap.html", 1}
 	ctx.Tpl("cp:page/layout.html", layout)
 }
