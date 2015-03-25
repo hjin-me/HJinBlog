@@ -9,6 +9,8 @@ fis.config.merge({
         }
     },
     roadmap : {
+        domain: "http://127.0.0.1:8088",
+        // domain : 'http://s1.example.com, http://s2.example.com',
         ext : {
             less: 'css'
         },

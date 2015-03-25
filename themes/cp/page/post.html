@@ -1,53 +1,51 @@
-{{template "head"}}
-<div class='panel panel-default'>
-    <div class='panel-heading'>
-        <i class='icon-edit icon-large'></i>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
         编辑文章
-    </div>
-    <div class='panel-body'>
-        <form>
-            <fieldset>
-                <div class='form-group'>
-                    <input class='form-control input-lg' placeholder='文章标题' type='text' value="{{.Content.Title}}">
-                </div>
-            </fieldset>
-            <fieldset>
-                <div id="epiceditor"></div>
-            </fieldset>
-            <fieldset>
-                <textarea name="post-content" id="post-content" style="display: none;">{{.Content.Content}}</textarea>
-            </fieldset>
-            <fieldset>
-                <div class='form-group'>
-                    <label class='control-label'>Single select</label>
-                    <select class='form-control'>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </div>
-            </fieldset>
+        <small>Optional description</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+        <li class="active">Here</li>
+    </ol>
+</section>
 
-            <div class='form-actions'>
-                <button class='btn btn-default' type='submit'>Submit</button>
-                <a class='btn' href='#'>Cancel</a>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <!-- form start -->
+                <form role="form">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="文章标题" value="{{.Title}}">
+                        </div>
+                        <div id="epiceditor"></div>
+                        <textarea name="post-content" id="post-content" style="display: none;">{{.Content}}</textarea>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
             </div>
-        </form>
+            <!-- /.box -->
+        </div>
     </div>
-</div>
-<script src="/static/editor/js/epiceditor.js"></script>
+</section>
+<!-- /.content -->
+<script src="../static/editor/js/epiceditor.js"></script>
 <script>
     var opts = {
         textarea: document.getElementById('post-content'),
         theme: {
-            base: 'http://127.0.0.1:8088/static/editor/themes/base/epiceditor.css',
-            preview: 'http://127.0.0.1:8088/static/editor/themes/preview/github.css',
-            editor: 'http://127.0.0.1:8088/static/editor/themes/editor/epic-light.css'
+            base: '{{uri "cp:static/editor/themes/base/epiceditor.css"}}',
+            preview: '{{uri "cp:static/editor/themes/preview/github.css"}}',
+            editor: '{{uri "cp:static/editor/themes/editor/epic-light.css"}}'
         },
         autogrow: true
     };
     var editor = new EpicEditor(opts).load();
 </script>
-{{template "foot"}}

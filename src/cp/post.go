@@ -1,7 +1,6 @@
 package cp
 
 import (
-	"log"
 	"models"
 	"strconv"
 
@@ -21,9 +20,11 @@ func Post(ctx banana.Context) {
 		panic(err)
 	}
 	x := models.ReadRaw(int(id))
-	log.Println(x)
 
-	layout := PostLayout{}
-	layout.Content = x
-	ctx.Tpl("cp/post", layout)
+	layout := ThemeLayout{}
+	layout.Header.Name = "cp:page/header.html"
+	layout.Sidebar.Name = "cp:page/sidebar.html"
+	layout.Footer.Name = "cp:page/footer.html"
+	layout.Content = ThemeBlock{"cp:page/post.html", x}
+	ctx.Tpl("cp:page/layout.html", layout)
 }

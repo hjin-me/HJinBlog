@@ -6,11 +6,6 @@ import (
 	"github.com/hjin-me/banana"
 )
 
-type PostLayout struct {
-	ContentBlock string
-	Content      interface{}
-}
-
 func Posts(ctx banana.Context) {
 	ps := models.Query(0, 10)
 	layout := ThemeLayout{}
