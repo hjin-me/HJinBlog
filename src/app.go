@@ -37,7 +37,7 @@ func main() {
 	banana.File("/static", cfg.Env.Statics)
 	banana.Get("/archives", post.Query)
 	banana.Get("/cp/dashboard", cp.DashBoard)
-	banana.Get("/cp/users", cp.DashBoard)
+	banana.Get("/cp/users", cp.Users)
 	banana.Get("/cp/posts", cp.Posts)
 	banana.Get("/cp/post/:id", cp.Post)
 	// banana.Get("/", post.Latest)
