@@ -7,7 +7,7 @@ import (
 	"github.com/hjin-me/banana"
 )
 
-func Post(ctx banana.Context) {
+func Post(ctx banana.Context) error {
 	var (
 		idStr string
 		ok    bool
@@ -26,5 +26,5 @@ func Post(ctx banana.Context) {
 	layout.Sidebar.Name = "cp:page/sidebar.html"
 	layout.Footer.Name = "cp:page/footer.html"
 	layout.Content = ThemeBlock{"cp:page/post.html", x}
-	ctx.Tpl("cp:page/layout.html", layout)
+	return ctx.Tpl("cp:page/layout.html", layout)
 }

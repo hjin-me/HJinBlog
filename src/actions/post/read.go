@@ -7,7 +7,7 @@ import (
 	"github.com/hjin-me/banana"
 )
 
-func Read(ctx banana.Context) {
+func Read(ctx banana.Context) error {
 	var (
 		idStr string
 		ok    bool
@@ -22,14 +22,14 @@ func Read(ctx banana.Context) {
 	x := models.Read(int(id))
 	layout := ThemeLayout{}
 	layout.Content = ThemeBlock{"my:page/post.html", x}
-	ctx.Tpl("my:page/layout.html", layout)
+	return ctx.Tpl("my:page/layout.html", layout)
 }
 
-func Latest(ctx banana.Context) {
+func Latest(ctx banana.Context) error {
 	ps := models.Query(0, 10)
 	layout := ThemeLayout{}
 	layout.Content = ThemeBlock{"my:page/home.html", ps}
-	ctx.Tpl("my:page/layout.html", layout)
+	return ctx.Tpl("my:page/layout.html", layout)
 	/*
 		posts, err := models.ZRange("pubtime", 0, 4)
 		if err != nil {
@@ -43,9 +43,9 @@ type HomeLayout struct {
 	Content interface{}
 }
 
-func Query(ctx banana.Context) {
+func Query(ctx banana.Context) error {
 	posts := models.Query(0, 10)
 	layout := HomeLayout{}
 	layout.Content = posts
-	ctx.Tpl("my/home", layout)
+	return ctx.Tpl("my/home", layout)
 }
