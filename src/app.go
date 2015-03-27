@@ -40,7 +40,7 @@ func main() {
 	banana.Get("/cp/users", cp.Users)
 	banana.Get("/cp/posts", cp.Posts)
 	banana.Get("/cp/post/:id", cp.Post)
-	// banana.Get("/", post.Latest)
+	banana.Get("/", post.Latest)
 
 	<-ctx.Done()
 }

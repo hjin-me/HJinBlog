@@ -1,0 +1,26 @@
+<article role="article">
+    <h1>{{.Title}}</h1>
+    <time datetime="{{printf "%d-%02d-%02d" (.PubTime.Year) (.PubTime.Month) (.PubTime.Day)}}">{{printf "%d 年 %02d 月 %02d 日" (.PubTime.Year) (.PubTime.Month) (.PubTime.Day)}}</time>
+    {{.Content | md}}
+
+    <div role="note" class="license">
+        <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/">
+            <img alt="知识共享许可协议" src="http://i.creativecommons.org/l/by-nc-sa/3.0/cn/80x15.png">
+        </a>
+        本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/">知识共享署名-非商业性使用-相同方式共享 3.0 中国大陆许可协议</a>进行许可。
+    </div>
+</article>
+
+<div>
+    <div id="disqus_thread"></div>
+    <noscript>Please enable JavaScript to view the<a href="http://disqus.com/?ref_noscript">comments powered by
+        Disqus.</a></noscript>
+    <div><a href="http://disqus.com" class="dsq-brlink">comments powered by<span
+            class="logo-disqus">Disqus</span></a></div>
+</div>
+<script src="../static/modules/pretty.js"></script>
+<script src="../static/modules/disqus.js"></script>
+<script>
+    require('my:pretty');
+    require('my:disqus')('hjin', 'huangj.in_{{.Id}}');
+</script>

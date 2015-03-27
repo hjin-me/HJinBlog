@@ -1,0 +1,33 @@
+@import "est/all";
+
+// override global variables
+@support-old-ie: false;
+@default-font-size: 320px;
+.global-reset();
+
+@import "response";
+
+body {
+  font-family: 'helvetica neue', tahoma, 'hiragino sans gb', stheiti, 'wenquanyi micro hei', sans-serif;
+}
+
+@import "flex";
+@import "top";
+@import "home";
+@import "article";
+@import "pretty";
+@import "footer";
+
+
+// small
+@media (max-width: 480px) {
+
+}
+// normal
+@media (max-width: 768px) {
+
+}
+// large
+@media (min-width: 1024px) {
+
+}

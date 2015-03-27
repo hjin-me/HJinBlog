@@ -8,17 +8,28 @@ import (
 )
 
 func Read(ctx banana.Context) {
-	if idStr, ok := ctx.Params()["id"]; ok {
-		id, err := strconv.ParseInt(idStr, 10, 32)
-		if err != nil {
-			panic(err)
-		}
-		x := models.Read(int(id))
-		ctx.Tpl("my/post", x)
+	var (
+		idStr string
+		ok    bool
+	)
+	if idStr, ok = ctx.Params()["id"]; !ok {
+		panic("no id")
 	}
+	id, err := strconv.ParseInt(idStr, 10, 32)
+	if err != nil {
+		panic(err)
+	}
+	x := models.Read(int(id))
+	layout := ThemeLayout{}
+	layout.Content = ThemeBlock{"my:page/post.html", x}
+	ctx.Tpl("my:page/layout.html", layout)
 }
 
 func Latest(ctx banana.Context) {
+	ps := models.Query(0, 10)
+	layout := ThemeLayout{}
+	layout.Content = ThemeBlock{"my:page/home.html", ps}
+	ctx.Tpl("my:page/layout.html", layout)
 	/*
 		posts, err := models.ZRange("pubtime", 0, 4)
 		if err != nil {
