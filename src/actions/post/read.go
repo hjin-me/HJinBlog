@@ -21,21 +21,21 @@ func Read(ctx banana.Context) error {
 	}
 	x := models.Read(int(id))
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"my:page/post.html", x}
-	return ctx.Tpl("my:page/layout.html", layout)
+	layout.Content = ThemeBlock{"my:page/post", x}
+	return ctx.Tpl("my:page/layout", layout)
 }
 
 func Latest(ctx banana.Context) error {
 	ps := models.Query(0, 10)
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"my:page/home.html", ps}
-	return ctx.Tpl("my:page/layout.html", layout)
+	layout.Content = ThemeBlock{"my:page/home", ps}
+	return ctx.Tpl("my:page/layout", layout)
 	/*
 		posts, err := models.ZRange("pubtime", 0, 4)
 		if err != nil {
 			log.Fatal(err)
 		}
-		ctx.Tpl("home.html", posts)
+		ctx.Tpl("home", posts)
 	*/
 }
 
