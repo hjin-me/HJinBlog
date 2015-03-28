@@ -80,7 +80,7 @@ func (p *RawPost) Save() error {
 		defer stmt.Close() // Close the statement when we leave main() / the program terminates
 	}
 
-	result, err := stmt.Exec(string(p.Content), p.Category, p.PubTime, p.Title, p.Description, p.Keywords.String(), p.Id)
+	result, err := stmt.Exec(string(p.Content), p.Category, p.PubTime.Unix(), p.Title, p.Description, p.Keywords.String(), p.Id)
 	if err != nil {
 		return err
 	}
