@@ -56,10 +56,10 @@ func (k Keyword) Alias() string {
 	return strings.ToLower(string(k))
 }
 
-func (p *Post) Save() {
+func (p *RawPost) Save() error {
 	db, err := da.Connect()
 	if err != nil {
-		panic(err)
+		return err
 	}
 	var (
 		stmt     *sql.Stmt
@@ -68,29 +68,30 @@ func (p *Post) Save() {
 	if p.Id == 0 {
 		stmt, err = db.Prepare("INSERT INTO blog_posts (content, category, pubtime, title, description, tags) VALUES (?,?,?,?,?,?)") // ? = placeholder
 		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
+			return err
 		}
 		isInsert = true
 		defer stmt.Close() // Close the statement when we leave main() / the program terminates
 	} else {
 		stmt, err = db.Prepare("UPDATE blog_posts SET content=?, category=?, pubtime=?, title=?, description=?, tags=? WHERE id=?") // ? = placeholder
 		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
+			return err
 		}
 		defer stmt.Close() // Close the statement when we leave main() / the program terminates
 	}
 
 	result, err := stmt.Exec(string(p.Content), p.Category, p.PubTime, p.Title, p.Description, p.Keywords.String(), p.Id)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if isInsert {
 		id, err := result.LastInsertId()
 		if err != nil {
-			panic(err)
+			return err
 		}
 		p.Id = int(id)
 	}
+	return nil
 
 	// Prepare statement for inserting data
 	// db.Do("hmset", "post:"+p.Id, "id", p.Id, "title", p.Title, "content", string(p.Content), "keywords", p.Keywords.Marshal(), "description", p.Description, "pubtime", p.PubTime.Unix(), "category", p.Category)
@@ -151,8 +152,10 @@ func Read(id int) Post {
 	return p
 }
 
-func New() Post {
-	return Post{}
+func New() RawPost {
+	p := RawPost{}
+	p.PubTime = time.Now()
+	return p
 }
 
 func Query(start, limit int) []Post {
