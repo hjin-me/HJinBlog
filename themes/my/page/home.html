@@ -1,9 +1,0 @@
-{{range .}}
-<section class="home_item" role="link">
-    <a href="/post/{{.Id}}">
-        <h1>{{.Title}}</h1>
-        <p>{{.Description}}</p>
-        <time datetime="{{printf "%d-%02d-%02d" (.PubTime.Year) (.PubTime.Month) (.PubTime.Day)}}">{{printf "%d 年 %02d 月 %02d 日" (.PubTime.Year) (.PubTime.Month) (.PubTime.Day)}}</time>
-    </a>
-</section>
-{{end}}
