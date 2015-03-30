@@ -11,6 +11,14 @@ import (
 	"database/sql"
 )
 
+const (
+	TABLE_NAME_POSTS = "blog_posts"
+	INSERT_POSTS     = "INSERT INTO " + TABLE_NAME_POSTS + "(content, category, pubtime, title, description, tags) VALUES (?,?,?,?,?,?)"
+	UPDATE_POSTS     = "UPDATE " + TABLE_NAME_POSTS + " SET content=?, category=?, pubtime=?, title=?, description=?, tags=? WHERE id=?"
+	QUERY_POSTS      = "SELECT id, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_POSTS + " ORDER BY pubtime DESC LIMIT ?,?"
+	FIND_POSTS       = "SELECT id, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_POSTS + " WHERE id = ?"
+)
+
 type RawPost struct {
 	Id          int
 	Title       string
@@ -66,14 +74,14 @@ func (p *RawPost) Save() error {
 		isInsert = false
 	)
 	if p.Id == 0 {
-		stmt, err = db.Prepare("INSERT INTO blog_posts (content, category, pubtime, title, description, tags) VALUES (?,?,?,?,?,?)") // ? = placeholder
+		stmt, err = db.Prepare(INSERT_POSTS) // ? = placeholder
 		if err != nil {
 			return err
 		}
 		isInsert = true
 		defer stmt.Close() // Close the statement when we leave main() / the program terminates
 	} else {
-		stmt, err = db.Prepare("UPDATE blog_posts SET content=?, category=?, pubtime=?, title=?, description=?, tags=? WHERE id=?") // ? = placeholder
+		stmt, err = db.Prepare(UPDATE_POSTS) // ? = placeholder
 		if err != nil {
 			return err
 		}
@@ -107,7 +115,7 @@ func ReadRaw(id int) RawPost {
 		panic(err)
 	}
 	// Prepare statement for reading data
-	stmt, err := db.Prepare("SELECT id, content, category, pubtime, title, description, tags FROM blog_posts WHERE id = ?")
+	stmt, err := db.Prepare(FIND_POSTS)
 	if err != nil {
 		panic(err) // proper error handling instead of panic in your app
 	}
@@ -169,7 +177,7 @@ func Query(start, limit int) []Post {
 		panic(err)
 	}
 	// Prepare statement for reading data
-	stmt, err := db.Prepare("SELECT id, content, category, pubtime, title, description, tags FROM blog_posts ORDER BY pubtime DESC LIMIT ?,?")
+	stmt, err := db.Prepare(QUERY_POSTS)
 	if err != nil {
 		panic(err) // proper error handling instead of panic in your app
 	}
