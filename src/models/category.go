@@ -16,6 +16,45 @@ type Category struct {
 	Description string
 }
 
+func QueryCategory() ([]Category, error) {
+	db, err := da.Connect()
+	if err != nil {
+		return nil, err
+	}
+	var (
+		stmt *sql.Stmt
+	)
+	stmt, err = db.Prepare(QUERY_CATEGORY) // ? = placeholder
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close() // Close the statement when we leave main() / the program terminates
+
+	var (
+		name, description string
+		cs                []Category
+	)
+	rows, err := stmt.Query(0, 10)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		err = rows.Scan(&name, &description)
+		if err != nil {
+			panic(err)
+		}
+		var (
+			c Category
+		)
+		c.Name = name
+		c.Description = description
+
+		cs = append(cs, c)
+	}
+	return cs, nil
+
+}
+
 func (c *Category) Save() error {
 	db, err := da.Connect()
 	if err != nil {

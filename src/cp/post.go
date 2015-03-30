@@ -19,10 +19,14 @@ func Post(ctx banana.Context) error {
 	if err != nil {
 		panic(err)
 	}
-	x := models.ReadRaw(int(id))
+	post := models.ReadRaw(int(id))
+	categories, err := models.QueryCategory()
+	if err != nil {
+		return err
+	}
 
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/post", x}
+	layout.Content = ThemeBlock{"cp:page/post", struct{ Post, Categories interface{} }{post, categories}}
 	return ctx.Tpl("cp:page/layout", layout)
 }
 
@@ -39,10 +43,12 @@ func SavePost(ctx banana.Context) error {
 		return err
 	}
 
+	r := ctx.Req()
 	p := models.New()
 	p.Id = int(id)
-	p.Title = ctx.Req().FormValue("title")
-	p.Content = ctx.Req().FormValue("content")
+	p.Title = r.FormValue("title")
+	p.Content = r.FormValue("content")
+	p.Category = r.FormValue("category")
 	err = p.Save()
 	if err != nil {
 		return err
