@@ -49,6 +49,8 @@ func SavePost(ctx banana.Context) error {
 	p.Title = r.FormValue("title")
 	p.Content = r.FormValue("content")
 	p.Category = r.FormValue("category")
+	p.Description = r.FormValue("description")
+	p.Keywords.Parse(r.FormValue("keywords"))
 	err = p.Save()
 	if err != nil {
 		return err
