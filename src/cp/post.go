@@ -2,12 +2,22 @@ package cp
 
 import (
 	"models"
+	"net/http"
 	"strconv"
 
 	"github.com/hjin-me/banana"
 )
 
 func Post(ctx banana.Context) error {
+	can, err := Auth(ctx, PrivilegePostRead)
+	if err != nil {
+		return err
+	}
+	if !can {
+		http.Redirect(ctx.Res(), ctx.Req(), "/login?error", http.StatusFound)
+		return nil
+	}
+
 	var (
 		idStr string
 		ok    bool
@@ -31,6 +41,15 @@ func Post(ctx banana.Context) error {
 }
 
 func SavePost(ctx banana.Context) error {
+	can, err := Auth(ctx, PrivilegePostWrite)
+	if err != nil {
+		return err
+	}
+	if !can {
+		http.Redirect(ctx.Res(), ctx.Req(), "/login?error", http.StatusFound)
+		return nil
+	}
+
 	var (
 		idStr string
 		ok    bool
