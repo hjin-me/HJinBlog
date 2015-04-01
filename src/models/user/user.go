@@ -15,7 +15,7 @@ const (
 	TABLE_NAME_USERS = "blog_users"
 	INSERT_USER      = "INSERT INTO " + TABLE_NAME_USERS + "(username, pwd, privilege, create_time) VALUES (?,?,?,?)"
 	UPDATE_USER      = "UPDATE " + TABLE_NAME_USERS + " SET content=?, category=?, pubtime=?, title=?, description=?, tags=? WHERE id=?"
-	QUERY_USERS      = "SELECT id, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_USERS + " ORDER BY pubtime DESC LIMIT ?,?"
+	QUERY_USERS      = "SELECT id, username, privilege FROM " + TABLE_NAME_USERS + " ORDER BY id DESC LIMIT ?,?"
 	FIND_USER        = "SELECT id, username, pwd, privilege FROM " + TABLE_NAME_USERS + " WHERE username = ?"
 	FIND_PRIVILEGE   = "SELECT privilege FROM " + TABLE_NAME_USERS + " WHERE username = ?"
 	VALIDATE_USER    = "SELECT count(*) FROM " + TABLE_NAME_USERS + " WHERE username=? AND pwd=? LIMIT 1"
@@ -25,6 +25,12 @@ var (
 	salt    = "xxx"
 	Expires = time.Second * 86400
 )
+
+type User struct {
+	Id        int
+	Name      string
+	Privilege Privilege
+}
 
 func Hash(str string) string {
 	s := sha1.Sum([]byte(salt + str))
@@ -141,4 +147,36 @@ func DecodeToken(token string) (isLogin bool, username string, err error) {
 
 	isLogin = true
 	return
+}
+
+func Query(start, limit int) ([]User, error) {
+
+	var (
+		err      error
+		userList []User
+	)
+	db, err := da.Connect()
+	if err != nil {
+		return userList, err
+	}
+	// Prepare statement for reading data
+	stmt, err := db.Prepare(QUERY_USERS)
+	if err != nil {
+		return userList, err
+		panic(err) // proper error handling instead of panic in your app
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(start, limit)
+	for rows.Next() {
+		u := User{}
+		err = rows.Scan(&u.Id, &u.Name, &u.Privilege)
+		if err != nil {
+			panic(err)
+		}
+
+		userList = append(userList, u)
+	}
+
+	return userList, nil
 }

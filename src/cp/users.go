@@ -1,6 +1,7 @@
 package cp
 
 import (
+	"models/user"
 	"net/http"
 
 	"github.com/hjin-me/banana"
@@ -18,7 +19,12 @@ func Users(ctx banana.Context) error {
 	default:
 		return err
 	}
+
+	users, err := user.Query(0, 10)
+	if err != nil {
+		return err
+	}
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/users", 1}
+	layout.Content = ThemeBlock{"cp:page/users", struct{ List interface{} }{users}}
 	return ctx.Tpl("cp:page/layout", layout)
 }
