@@ -26,41 +26,44 @@ const (
 )
 
 var (
+	ErrNoPermit  = errors.New("have no permit")
 	ErrPrivilege = errors.New("have no permit")
 	ErrNotLogin  = errors.New("have not login")
 )
 
-func Auth(ctx banana.Context, p ...int) (bool, error) {
+func Auth(ctx banana.Context, p ...int) error {
 
 	bnuid, err := ctx.Req().Cookie(UID_COOKIE_NAME)
 	if err != nil {
 		if err == http.ErrNoCookie {
 			log.Println("cookes not found")
-			return false, nil
+			return ErrNotLogin
 		}
-		return false, err
+		return err
 	}
 	isLogin, username, err := user.DecodeToken(bnuid.Value)
 	if err != nil {
 		log.Println("decode error")
-		return false, err
+		return ErrNotLogin
 	}
 	if !isLogin {
 		log.Println("is not login")
-		return false, nil
+		return ErrNotLogin
 	}
 	privilege := 0
 	for _, x := range p {
 		privilege = privilege | x
 	}
-	log.Println(privilege)
 
 	can, err := user.Authentication(username, privilege)
 	if err != nil {
 		log.Println("auth error")
-		return false, err
+		return err
 	}
-	return can, nil
+	if !can {
+		return ErrNoPermit
+	}
+	return nil
 }
 
 func LoginPage(ctx banana.Context) error {
@@ -71,12 +74,15 @@ func Create(ctx banana.Context) error {
 
 	r := ctx.Req()
 
-	can, err := Auth(ctx, PrivilegeUserWrite)
-	if err != nil {
+	err := Auth(ctx, PrivilegeUserWrite)
+	switch err {
+	case ErrNoPermit:
 		return err
-	}
-	if !can {
-		return ErrPrivilege
+	case ErrNotLogin:
+		return err
+	case nil:
+	default:
+		return err
 	}
 
 	username, pwd := r.FormValue("username"), r.FormValue("pwd")

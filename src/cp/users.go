@@ -7,13 +7,16 @@ import (
 )
 
 func Users(ctx banana.Context) error {
-	can, err := Auth(ctx, PrivilegeUserRead)
-	if err != nil {
+	err := Auth(ctx, PrivilegeUserRead)
+	switch err {
+	case ErrNoPermit:
 		return err
-	}
-	if !can {
-		http.Redirect(ctx.Res(), ctx.Req(), "/login?error", http.StatusFound)
+	case ErrNotLogin:
+		http.Redirect(ctx.Res(), ctx.Req(), "/login?error&u=/cp/users", http.StatusFound)
 		return nil
+	case nil:
+	default:
+		return err
 	}
 	layout := ThemeLayout{}
 	layout.Content = ThemeBlock{"cp:page/users", 1}

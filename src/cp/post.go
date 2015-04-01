@@ -9,13 +9,16 @@ import (
 )
 
 func Post(ctx banana.Context) error {
-	can, err := Auth(ctx, PrivilegePostRead)
-	if err != nil {
+	err := Auth(ctx, PrivilegePostRead)
+	switch err {
+	case ErrNoPermit:
 		return err
-	}
-	if !can {
+	case ErrNotLogin:
 		http.Redirect(ctx.Res(), ctx.Req(), "/login?error", http.StatusFound)
 		return nil
+	case nil:
+	default:
+		return err
 	}
 
 	var (
@@ -41,13 +44,15 @@ func Post(ctx banana.Context) error {
 }
 
 func SavePost(ctx banana.Context) error {
-	can, err := Auth(ctx, PrivilegePostWrite)
-	if err != nil {
+	err := Auth(ctx, PrivilegePostWrite)
+	switch err {
+	case ErrNoPermit:
 		return err
-	}
-	if !can {
-		http.Redirect(ctx.Res(), ctx.Req(), "/login?error", http.StatusFound)
-		return nil
+	case ErrNotLogin:
+		return err
+	case nil:
+	default:
+		return err
 	}
 
 	var (

@@ -9,13 +9,16 @@ import (
 
 func Posts(ctx banana.Context) error {
 
-	can, err := Auth(ctx, PrivilegePostRead)
-	if err != nil {
+	err := Auth(ctx, PrivilegePostRead)
+	switch err {
+	case ErrNoPermit:
 		return err
-	}
-	if !can {
-		http.Redirect(ctx.Res(), ctx.Req(), "/login?error", http.StatusFound)
+	case ErrNotLogin:
+		http.Redirect(ctx.Res(), ctx.Req(), "/login?error&u=/cp/posts", http.StatusFound)
 		return nil
+	case nil:
+	default:
+		return err
 	}
 
 	ps := models.Query(0, 10)
