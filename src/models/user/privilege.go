@@ -18,11 +18,11 @@ func (p Privilege) String() string {
 	s := "forbidden"
 	pInt := int(p)
 	switch {
-	case pInt > PrivilegeUserWrite|PrivilegeUserRead|PrivilegeUserDelete:
+	case 0 < pInt&(PrivilegeUserWrite|PrivilegeUserRead|PrivilegeUserDelete):
 		s = "admin"
-	case pInt > PrivilegeCategoryWrite|PrivilegePostWrite:
+	case 0 < pInt&(PrivilegeCategoryWrite|PrivilegePostWrite):
 		s = "editor"
-	case pInt > PrivilegeCategoryRead|PrivilegePostRead:
+	case 0 < pInt&(PrivilegeCategoryRead|PrivilegePostRead):
 		s = "viewer"
 	}
 

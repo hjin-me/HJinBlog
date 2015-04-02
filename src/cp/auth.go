@@ -70,41 +70,6 @@ func LoginPage(ctx banana.Context) error {
 	return ctx.Tpl("cp:page/login", 0)
 }
 
-func Create(ctx banana.Context) error {
-
-	r := ctx.Req()
-
-	err := Auth(ctx, PrivilegeUserWrite)
-	switch err {
-	case ErrNoPermit:
-		return err
-	case ErrNotLogin:
-		return err
-	case nil:
-	default:
-		return err
-	}
-
-	username, pwd := r.FormValue("username"), r.FormValue("pwd")
-
-	privilege := 0
-	switch r.FormValue("privilege") {
-	case "admin":
-		privilege = PrivilegePostDelete | PrivilegePostDelete | PrivilegePostWrite | PrivilegeUserDelete | PrivilegeUserRead | PrivilegeUserWrite | PrivilegeCategoryRead | PrivilegeCategoryWrite | PrivilegeCategoryDelete
-	case "editor":
-		privilege = PrivilegePostDelete | PrivilegePostDelete | PrivilegePostWrite | PrivilegeCategoryRead | PrivilegeCategoryWrite | PrivilegeCategoryDelete
-	case "visitor":
-		privilege = PrivilegePostRead
-	}
-
-	err = user.Add(username, pwd, privilege)
-	if err != nil {
-		return err
-	}
-
-	return ctx.Json(struct{}{})
-}
-
 func Login(ctx banana.Context) error {
 
 	r := ctx.Req()

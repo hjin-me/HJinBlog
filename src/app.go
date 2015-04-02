@@ -42,7 +42,8 @@ func main() {
 
 	banana.Get("/cp/dashboard", cp.DashBoard)
 	banana.Get("/cp/users", cp.Users)
-	banana.Post("/cp/user", cp.Create)
+	banana.Get("/cp/user", cp.UsersCreatePage)
+	banana.Post("/cp/user", cp.UsersCreate)
 
 	banana.Get("/cp/posts", cp.Posts)
 	banana.Get("/cp/post/:id", cp.Post)

@@ -16,7 +16,7 @@ const (
 	INSERT_USER      = "INSERT INTO " + TABLE_NAME_USERS + "(username, pwd, privilege, create_time) VALUES (?,?,?,?)"
 	UPDATE_USER      = "UPDATE " + TABLE_NAME_USERS + " SET content=?, category=?, pubtime=?, title=?, description=?, tags=? WHERE id=?"
 	QUERY_USERS      = "SELECT id, username, privilege FROM " + TABLE_NAME_USERS + " ORDER BY id DESC LIMIT ?,?"
-	FIND_USER        = "SELECT id, username, pwd, privilege FROM " + TABLE_NAME_USERS + " WHERE username = ?"
+	FIND_USER        = "SELECT id, username, privilege FROM " + TABLE_NAME_USERS + " WHERE id = ?"
 	FIND_PRIVILEGE   = "SELECT privilege FROM " + TABLE_NAME_USERS + " WHERE username = ?"
 	VALIDATE_USER    = "SELECT count(*) FROM " + TABLE_NAME_USERS + " WHERE username=? AND pwd=? LIMIT 1"
 )
@@ -163,7 +163,6 @@ func Query(start, limit int) ([]User, error) {
 	stmt, err := db.Prepare(QUERY_USERS)
 	if err != nil {
 		return userList, err
-		panic(err) // proper error handling instead of panic in your app
 	}
 	defer stmt.Close()
 
@@ -179,4 +178,24 @@ func Query(start, limit int) ([]User, error) {
 	}
 
 	return userList, nil
+}
+
+func FindOne(id int) (user User, err error) {
+	db, err := da.Connect()
+	if err != nil {
+		return
+	}
+	stmt, err := db.Prepare(FIND_USER)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRow(id)
+	err = row.Scan(&user.Id, &user.Name, &user.Privilege)
+	if err != nil {
+		return
+	}
+
+	return
 }
