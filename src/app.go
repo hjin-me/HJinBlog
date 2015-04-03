@@ -5,6 +5,7 @@ import (
 	"cp"
 	"da"
 	"log"
+	"routes"
 
 	"github.com/hjin-me/banana"
 )
@@ -32,23 +33,28 @@ func main() {
 	}
 	defer da.Close()
 	log.Println("database connected")
-	// route init
-	banana.Get("/post/:id", post.Read)
+	routes.Reg("post_page", post.Read)
+	routes.Reg("archives_page", post.Query)
+	routes.Reg("home_page", post.Latest)
+
+	routes.Reg("login_page", cp.LoginPage)
+	routes.Reg("login_post", cp.Login)
+
+	routes.Reg("admin_users_page", cp.Users)
+	routes.Reg("admin_user_page", cp.UsersCreatePage)
+	routes.Reg("admin_user_post", cp.UsersCreate)
+
+	routes.Reg("admin_posts_page", cp.Posts)
+	routes.Reg("admin_post_page", cp.Post)
+	routes.Reg("admin_post_post", cp.SavePost)
+
+	routes.Reg("admin_dashboard_page", cp.DashBoard)
+	log.Println("route complete")
+
 	banana.File("/static", cfg.Env.Statics)
-	banana.Get("/archives", post.Query)
 
-	banana.Get("/login", cp.LoginPage)
-	banana.Post("/login", cp.Login)
-
-	banana.Get("/cp/dashboard", cp.DashBoard)
-	banana.Get("/cp/users", cp.Users)
-	banana.Get("/cp/user", cp.UsersCreatePage)
-	banana.Post("/cp/user", cp.UsersCreate)
-
-	banana.Get("/cp/posts", cp.Posts)
-	banana.Get("/cp/post/:id", cp.Post)
-	banana.Post("/cp/post/:id", cp.SavePost)
-	banana.Get("/", post.Latest)
+	routes.Handle()
+	// route init
 
 	<-ctx.Done()
 }
