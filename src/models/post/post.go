@@ -1,10 +1,8 @@
-package models
+package post
 
 import (
-	"encoding/json"
 	"html/template"
-	"log"
-	"strings"
+	"models/category"
 	"time"
 
 	"da"
@@ -12,11 +10,12 @@ import (
 )
 
 const (
-	TABLE_NAME_POSTS = "blog_posts"
-	INSERT_POSTS     = "INSERT INTO " + TABLE_NAME_POSTS + "(uid, content, category, pubtime, title, description, tags) VALUES (?,?,?,?,?,?,?)"
-	UPDATE_POSTS     = "UPDATE " + TABLE_NAME_POSTS + " SET uid=?, content=?, category=?, pubtime=?, title=?, description=?, tags=? WHERE id=?"
-	QUERY_POSTS      = "SELECT id, uid, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_POSTS + " ORDER BY pubtime DESC LIMIT ?,?"
-	FIND_POSTS       = "SELECT id, uid, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_POSTS + " WHERE id = ?"
+	TABLE_NAME_POSTS      = "blog_posts"
+	TABLE_NAME_CATEGORIES = "blog_categories"
+	INSERT_POSTS          = "INSERT INTO " + TABLE_NAME_POSTS + "(uid, content, category, pubtime, title, description, keywords) VALUES (?,?,?,?,?,?,?)"
+	UPDATE_POSTS          = "UPDATE " + TABLE_NAME_POSTS + " SET uid=?, content=?, category=?, pubtime=?, title=?, description=?, keywords=? WHERE id=?"
+	QUERY_POSTS           = "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid ORDER BY pubtime DESC LIMIT ?,?"
+	FIND_POSTS            = "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid WHERE id = ?"
 )
 
 type RawPost struct {
@@ -24,7 +23,7 @@ type RawPost struct {
 	UserId      int
 	Title       string
 	Content     string
-	Category    string
+	Category    category.Category
 	Keywords    Keywords
 	Description string
 	PubTime     time.Time
@@ -33,46 +32,6 @@ type RawPost struct {
 type Post struct {
 	RawPost
 	Content template.HTML
-}
-type Keywords []Keyword
-
-func (ks Keywords) String() string {
-	tmps := make([]string, len(ks))
-	for i, v := range ks {
-		tmps[i] = string(v)
-	}
-	return strings.Join(tmps, ",")
-}
-func (ks *Keywords) Parse(s string) {
-	s = strings.Trim(s, " ,")
-	ss := strings.Split(s, ",")
-	ts := make(Keywords, len(ss))
-	for i, s := range ss {
-		ts[i] = Keyword(s)
-	}
-	*ks = ts
-}
-
-func (kw Keywords) Marshal() string {
-	ret, err := json.Marshal(kw)
-	if err != nil {
-		log.Println(err)
-		panic(err)
-	}
-	return string(ret)
-}
-func (kw *Keywords) Unmarshal(str string) {
-	err := json.Unmarshal([]byte(str), kw)
-	if err != nil {
-		log.Println(err)
-		panic(err)
-	}
-}
-
-type Keyword string
-
-func (k Keyword) Alias() string {
-	return strings.ToLower(string(k))
 }
 
 func (p *RawPost) Save() error {
@@ -135,13 +94,14 @@ func ReadRaw(id int) RawPost {
 	var (
 		uid         int
 		content     string
-		category    string
+		category    category.Category
 		pubtime     int64
 		title       string
 		description string
-		tags        string
+		keywords    string
 	)
-	err = stmt.QueryRow(id).Scan(&id, &uid, &content, &category, &pubtime, &title, &description, &tags)
+	// "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid WHERE id = ?"
+	err = stmt.QueryRow(id).Scan(&id, &uid, &content, &category.Id, &category.Name, &category.Alias, &pubtime, &title, &description, &keywords)
 	if err != nil {
 		panic(err)
 	}
@@ -152,16 +112,9 @@ func ReadRaw(id int) RawPost {
 	p.Title = title
 	p.Description = description
 
-	kws := strings.Split(tags, ",")
-	for _, v := range kws {
-		v = strings.Trim(v, " ")
-		if v != "" {
-			p.Keywords = append(p.Keywords, Keyword(v))
-		}
-	}
+	p.Keywords.Parse(keywords)
 
 	return p
-
 }
 
 func Read(id int) Post {
@@ -199,15 +152,16 @@ func Query(start, limit int) []Post {
 		id          int
 		uid         int
 		content     string
-		category    string
+		category    category.Category
 		pubtime     int64
 		title       string
 		description string
-		tags        string
+		keywords    string
 	)
 	rows, err := stmt.Query(start, limit)
 	for rows.Next() {
-		err = rows.Scan(&id, &uid, &content, &category, &pubtime, &title, &description, &tags)
+		// "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid WHERE id = ?"
+		err = rows.Scan(&id, &uid, &content, &category.Id, &category.Name, &category.Alias, &pubtime, &title, &description, &keywords)
 		if err != nil {
 			panic(err)
 		}
@@ -220,14 +174,8 @@ func Query(start, limit int) []Post {
 		p.PubTime = time.Unix(pubtime, 0)
 		p.Title = title
 		p.Description = description
+		p.Keywords.Parse(keywords)
 
-		kws := strings.Split(tags, ",")
-		for _, v := range kws {
-			v = strings.Trim(v, " ")
-			if v != "" {
-				p.Keywords = append(p.Keywords, Keyword(v))
-			}
-		}
 		ps = append(ps, p)
 	}
 

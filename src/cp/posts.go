@@ -1,7 +1,7 @@
 package cp
 
 import (
-	"models"
+	"models/post"
 	"net/http"
 
 	"github.com/hjin-me/banana"
@@ -21,7 +21,7 @@ func Posts(ctx banana.Context) error {
 		return err
 	}
 
-	ps := models.Query(0, 10)
+	ps := post.Query(0, 10)
 	layout := ThemeLayout{}
 	layout.Content = ThemeBlock{"cp:page/posts", ps}
 	return ctx.Tpl("cp:page/layout", layout)

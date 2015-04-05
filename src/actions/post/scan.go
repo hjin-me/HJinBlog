@@ -1,14 +1,14 @@
 package actions
 
 import (
-	"models"
+	"models/post"
 
 	"github.com/hjin-me/banana"
 )
 
 type TimeArchive struct {
 	Year int
-	List []models.Post
+	List []post.Post
 }
 
 func Scan(ctx banana.Context) {

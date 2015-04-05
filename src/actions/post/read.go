@@ -1,7 +1,7 @@
 package actions
 
 import (
-	"models"
+	"models/post"
 	"strconv"
 
 	"github.com/hjin-me/banana"
@@ -19,14 +19,14 @@ func Read(ctx banana.Context) error {
 	if err != nil {
 		panic(err)
 	}
-	x := models.Read(int(id))
+	x := post.Read(int(id))
 	layout := ThemeLayout{}
 	layout.Content = ThemeBlock{"my:page/post", x}
 	return ctx.Tpl("my:page/layout", layout)
 }
 
 func Latest(ctx banana.Context) error {
-	ps := models.Query(0, 10)
+	ps := post.Query(0, 10)
 	layout := ThemeLayout{}
 	layout.Content = ThemeBlock{"my:page/home", ps}
 	return ctx.Tpl("my:page/layout", layout)
@@ -44,7 +44,7 @@ type HomeLayout struct {
 }
 
 func Query(ctx banana.Context) error {
-	posts := models.Query(0, 10)
+	posts := post.Query(0, 10)
 	layout := HomeLayout{}
 	layout.Content = posts
 	return ctx.Tpl("my/home", layout)

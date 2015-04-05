@@ -1,7 +1,8 @@
 package cp
 
 import (
-	"models"
+	"models/category"
+	"models/post"
 	"net/http"
 	"strconv"
 
@@ -32,8 +33,8 @@ func Post(ctx banana.Context) error {
 	if err != nil {
 		panic(err)
 	}
-	post := models.ReadRaw(int(id))
-	categories, err := models.QueryCategory()
+	post := post.ReadRaw(int(id))
+	categories, err := category.Query()
 	if err != nil {
 		return err
 	}
@@ -66,13 +67,17 @@ func SavePost(ctx banana.Context) error {
 	if err != nil {
 		return err
 	}
-
 	r := ctx.Req()
-	p := models.New()
+	cid, err := strconv.ParseInt(r.FormValue("category"), 10, 32)
+	if err != nil {
+		return err
+	}
+
+	p := post.New()
 	p.Id = int(id)
 	p.Title = r.FormValue("title")
 	p.Content = r.FormValue("content")
-	p.Category = r.FormValue("category")
+	p.Category.Id = int(cid)
 	p.Description = r.FormValue("description")
 	p.Keywords.Parse(r.FormValue("keywords"))
 	err = p.Save()
@@ -81,5 +86,4 @@ func SavePost(ctx banana.Context) error {
 	}
 
 	return ctx.Json(p)
-
 }

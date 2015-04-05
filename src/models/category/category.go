@@ -1,4 +1,4 @@
-package models
+package category
 
 import (
 	"da"
@@ -12,11 +12,12 @@ const (
 )
 
 type Category struct {
+	Id    int
 	Name  string
 	Alias string
 }
 
-func QueryCategory() ([]Category, error) {
+func Query() ([]Category, error) {
 	db, err := da.Connect()
 	if err != nil {
 		return nil, err
