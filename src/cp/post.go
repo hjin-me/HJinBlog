@@ -9,6 +9,63 @@ import (
 	"github.com/hjin-me/banana"
 )
 
+func NewPost(ctx banana.Context) error {
+	err := Auth(ctx, PrivilegePostRead)
+	switch err {
+	case ErrNoPermit:
+		return err
+	case ErrNotLogin:
+		http.Redirect(ctx.Res(), ctx.Req(), "/login?error", http.StatusFound)
+		return nil
+	case nil:
+	default:
+		return err
+	}
+
+	categories, err := category.Query()
+	if err != nil {
+		return err
+	}
+
+	p := post.New()
+	layout := ThemeLayout{}
+	layout.Content = ThemeBlock{"cp:page/post", struct{ Post, Categories interface{} }{p, categories}}
+	return ctx.Tpl("cp:page/layout", layout)
+}
+
+func SaveNewPost(ctx banana.Context) error {
+
+	err := Auth(ctx, PrivilegePostWrite)
+	switch err {
+	case ErrNoPermit:
+		return err
+	case ErrNotLogin:
+		return err
+	case nil:
+	default:
+		return err
+	}
+
+	r := ctx.Req()
+	cid, err := strconv.ParseInt(r.FormValue("category"), 10, 32)
+	if err != nil {
+		return err
+	}
+
+	p := post.New()
+	p.Title = r.FormValue("title")
+	p.Content = r.FormValue("content")
+	p.Category.Id = int(cid)
+	p.Description = r.FormValue("description")
+	p.Keywords.Parse(r.FormValue("keywords"))
+	err = p.Save()
+	if err != nil {
+		return err
+	}
+
+	return ctx.Json(p)
+}
+
 func Post(ctx banana.Context) error {
 	err := Auth(ctx, PrivilegePostRead)
 	switch err {
@@ -33,14 +90,14 @@ func Post(ctx banana.Context) error {
 	if err != nil {
 		panic(err)
 	}
-	post := post.ReadRaw(int(id))
+	p := post.ReadRaw(int(id))
 	categories, err := category.Query()
 	if err != nil {
 		return err
 	}
 
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/post", struct{ Post, Categories interface{} }{post, categories}}
+	layout.Content = ThemeBlock{"cp:page/post", struct{ Post, Categories interface{} }{p, categories}}
 	return ctx.Tpl("cp:page/layout", layout)
 }
 

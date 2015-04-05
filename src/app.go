@@ -45,8 +45,10 @@ func main() {
 	routes.Reg("admin_user_post", cp.UsersCreate)
 
 	routes.Reg("admin_posts_page", cp.Posts)
-	routes.Reg("admin_post_page", cp.Post)
-	routes.Reg("admin_post_post", cp.SavePost)
+	routes.Reg("admin_post_new_page", cp.NewPost)
+	routes.Reg("admin_post_edit_page", cp.Post)
+	routes.Reg("admin_post_new_post", cp.SaveNewPost)
+	routes.Reg("admin_post_edit_post", cp.SavePost)
 
 	routes.Reg("admin_dashboard_page", cp.DashBoard)
 	log.Println("route complete")

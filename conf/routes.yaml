@@ -30,11 +30,19 @@ routes:
     -   rule: "/cp/post/:id"
         method:
             - GET
-        action: admin_post_page
+        action: admin_post_edit_page
+    -   rule: "/cp/post"
+        method:
+            - GET
+        action: admin_post_new_page
     -   rule: "/cp/post/:id"
         method:
             - POST
-        action: admin_post_post
+        action: admin_post_edit_post
+    -   rule: "/cp/post"
+        method:
+            - POST
+        action: admin_post_new_post
     -   rule: "/post/:id"
         method:
             - GET

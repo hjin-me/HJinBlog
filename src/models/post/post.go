@@ -12,10 +12,10 @@ import (
 const (
 	TABLE_NAME_POSTS      = "blog_posts"
 	TABLE_NAME_CATEGORIES = "blog_categories"
-	INSERT_POSTS          = "INSERT INTO " + TABLE_NAME_POSTS + "(uid, content, category, pubtime, title, description, keywords) VALUES (?,?,?,?,?,?,?)"
-	UPDATE_POSTS          = "UPDATE " + TABLE_NAME_POSTS + " SET uid=?, content=?, category=?, pubtime=?, title=?, description=?, keywords=? WHERE id=?"
+	INSERT_POSTS          = "INSERT INTO " + TABLE_NAME_POSTS + "(uid, content, cid, pubtime, title, description, keywords) VALUES (?,?,?,?,?,?,?)"
+	UPDATE_POSTS          = "UPDATE " + TABLE_NAME_POSTS + " SET content=?, cid=?, pubtime=?, title=?, description=?, keywords=? WHERE id=?"
 	QUERY_POSTS           = "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid ORDER BY pubtime DESC LIMIT ?,?"
-	FIND_POSTS            = "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid WHERE id = ?"
+	FIND_POSTS            = "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid WHERE p.id = ?"
 )
 
 type RawPost struct {
@@ -43,25 +43,34 @@ func (p *RawPost) Save() error {
 		stmt     *sql.Stmt
 		isInsert = false
 	)
+	var (
+		result sql.Result
+	)
 	if p.Id == 0 {
+		// "INSERT INTO " + TABLE_NAME_POSTS + "(uid, content, cid, pubtime, title, description, keywords) VALUES (?,?,?,?,?,?,?)"
+		// "UPDATE " + TABLE_NAME_POSTS + " SET content=?, cid=?, pubtime=?, title=?, description=?, keywords=? WHERE id=?"
 		stmt, err = db.Prepare(INSERT_POSTS) // ? = placeholder
 		if err != nil {
 			return err
 		}
 		isInsert = true
 		defer stmt.Close() // Close the statement when we leave main() / the program terminates
+		result, err = stmt.Exec(p.UserId, string(p.Content), p.Category.Id, p.PubTime.Unix(), p.Title, p.Description, p.Keywords.String())
+		if err != nil {
+			return err
+		}
 	} else {
 		stmt, err = db.Prepare(UPDATE_POSTS) // ? = placeholder
 		if err != nil {
 			return err
 		}
 		defer stmt.Close() // Close the statement when we leave main() / the program terminates
+		result, err = stmt.Exec(string(p.Content), p.Category.Id, p.PubTime.Unix(), p.Title, p.Description, p.Keywords.String(), p.Id)
+		if err != nil {
+			return err
+		}
 	}
 
-	result, err := stmt.Exec(p.UserId, string(p.Content), p.Category, p.PubTime.Unix(), p.Title, p.Description, p.Keywords.String(), p.Id)
-	if err != nil {
-		return err
-	}
 	if isInsert {
 		id, err := result.LastInsertId()
 		if err != nil {

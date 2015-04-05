@@ -8,7 +8,7 @@ import (
 const (
 	TABLE_NAME_CATEGORY = "blog_categories"
 	UPDATE_CATEGORY     = "INSERT INTO " + TABLE_NAME_CATEGORY + " (name, alias) VALUES (?,?) ON DUPLICATE KEY UPDATE alias=VALUES(alias)"
-	QUERY_CATEGORY      = "SELECT name, alias FROM " + TABLE_NAME_CATEGORY + " LIMIT ?, ?"
+	QUERY_CATEGORY      = "SELECT id, name, alias FROM " + TABLE_NAME_CATEGORY + " LIMIT ?, ?"
 )
 
 type Category struct {
@@ -32,6 +32,7 @@ func Query() ([]Category, error) {
 	defer stmt.Close() // Close the statement when we leave main() / the program terminates
 
 	var (
+		id          int
 		name, alias string
 		cs          []Category
 	)
@@ -40,13 +41,14 @@ func Query() ([]Category, error) {
 		return nil, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&name, &alias)
+		err = rows.Scan(&id, &name, &alias)
 		if err != nil {
 			panic(err)
 		}
 		var (
 			c Category
 		)
+		c.Id = id
 		c.Name = name
 		c.Alias = alias
 
