@@ -38,5 +38,9 @@ func install() {
 	if err != nil {
 		panic(err)
 	}
+	err = importPosts()
+	if err != nil {
+		panic(err)
+	}
 	defer da.Close()
 }
