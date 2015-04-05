@@ -43,14 +43,18 @@ routes:
         method:
             - POST
         action: admin_post_new_post
-    -   rule: "/post/:id"
+    -   rule: "/category/:category"
         method:
             - GET
-        action: post_page
+        action: category_page
     -   rule: "/archives"
         method:
             - GET
         action: archives_page
+    -   rule: "/:year/:month/:day/:id"
+        method:
+            - GET
+        action: post_page
     -   rule: "/"
         method:
             - GET

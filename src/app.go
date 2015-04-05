@@ -36,6 +36,7 @@ func main() {
 	routes.Reg("post_page", post.Read)
 	routes.Reg("archives_page", post.Query)
 	routes.Reg("home_page", post.Latest)
+	routes.Reg("category_page", post.Category)
 
 	routes.Reg("login_page", cp.LoginPage)
 	routes.Reg("login_post", cp.Login)

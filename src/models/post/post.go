@@ -15,6 +15,7 @@ const (
 	INSERT_POSTS          = "INSERT INTO " + TABLE_NAME_POSTS + "(uid, content, cid, pubtime, title, description, keywords) VALUES (?,?,?,?,?,?,?)"
 	UPDATE_POSTS          = "UPDATE " + TABLE_NAME_POSTS + " SET content=?, cid=?, pubtime=?, title=?, description=?, keywords=? WHERE id=?"
 	QUERY_POSTS           = "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid ORDER BY pubtime DESC LIMIT ?,?"
+	QUERY_CATEGORY_POSTS  = "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid WHERE c.name = ? ORDER BY pubtime DESC LIMIT ?,?"
 	FIND_POSTS            = "SELECT p.id, p.uid, p.content, p.cid, c.name, c.alias, p.pubtime, p.title, p.description, p.keywords FROM " + TABLE_NAME_POSTS + " as p LEFT JOIN " + TABLE_NAME_CATEGORIES + " as c ON c.id=p.cid WHERE p.id = ?"
 )
 
@@ -189,4 +190,50 @@ func Query(start, limit int) []Post {
 	}
 
 	return ps
+}
+
+func QueryByCategory(c string, start, limit int) (ps []Post, err error) {
+
+	db, err := da.Connect()
+	if err != nil {
+		return
+	}
+	// Prepare statement for reading data
+	stmt, err := db.Prepare(QUERY_CATEGORY_POSTS)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	var (
+		id          int
+		uid         int
+		content     string
+		category    category.Category
+		pubtime     int64
+		title       string
+		description string
+		keywords    string
+	)
+	rows, err := stmt.Query(c, start, limit)
+	for rows.Next() {
+		err = rows.Scan(&id, &uid, &content, &category.Id, &category.Name, &category.Alias, &pubtime, &title, &description, &keywords)
+		if err != nil {
+			return
+		}
+		var (
+			p Post
+		)
+		p.Id = id
+		p.Content = template.HTML(content)
+		p.Category = category
+		p.PubTime = time.Unix(pubtime, 0)
+		p.Title = title
+		p.Description = description
+		p.Keywords.Parse(keywords)
+
+		ps = append(ps, p)
+	}
+
+	return ps, nil
 }

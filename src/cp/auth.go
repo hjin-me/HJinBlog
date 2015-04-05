@@ -36,7 +36,7 @@ func Auth(ctx banana.Context, p ...int) error {
 	bnuid, err := ctx.Req().Cookie(UID_COOKIE_NAME)
 	if err != nil {
 		if err == http.ErrNoCookie {
-			log.Println("cookes not found")
+			log.Println("cookies not found")
 			return ErrNotLogin
 		}
 		return err
