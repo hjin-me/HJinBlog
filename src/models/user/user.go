@@ -3,6 +3,7 @@ package user
 import (
 	"crypto/sha1"
 	"da"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"log"
@@ -110,6 +111,7 @@ func Check(username, pwd string) (bool, string, error) {
 	}
 
 	ts := strconv.FormatInt(time.Now().Add(Expires).Unix(), 10)
+	username = base64.StdEncoding.EncodeToString([]byte(username))
 	sign := fmt.Sprintf("%s|%s|%s", username, ts, Hash(username+ts+salt))
 
 	return true, sign, nil
@@ -138,13 +140,19 @@ func DecodeToken(token string) (isLogin bool, username string, err error) {
 		isLogin = false
 		return
 	}
-	log.Println(username, ts, salt)
+
 	if sign != Hash(username+ts+salt) {
 		log.Println("hash not ok", sign, Hash(username+ts+salt))
 		isLogin = false
 		return
 	}
 
+	unameByte, err := base64.StdEncoding.DecodeString(username)
+	if err != nil {
+		log.Println("parse uname failed")
+		return
+	}
+	username = string(unameByte)
 	isLogin = true
 	return
 }
