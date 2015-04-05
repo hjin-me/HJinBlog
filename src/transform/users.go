@@ -31,6 +31,7 @@ func importUsers() error {
 		return err
 	}
 	defer insertStmt.Close()
+	db.Exec("delete from " + targetTableName)
 
 	rows, err := readStmt.Query()
 	if err != nil {

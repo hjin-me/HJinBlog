@@ -7,13 +7,13 @@ import (
 
 const (
 	TABLE_NAME_CATEGORY = "blog_categories"
-	UPDATE_CATEGORY     = "INSERT INTO " + TABLE_NAME_CATEGORY + " (name, description) VALUES (?,?) ON DUPLICATE KEY UPDATE description=VALUES(description)"
-	QUERY_CATEGORY      = "SELECT name, description FROM " + TABLE_NAME_CATEGORY + " LIMIT ?, ?"
+	UPDATE_CATEGORY     = "INSERT INTO " + TABLE_NAME_CATEGORY + " (name, alias) VALUES (?,?) ON DUPLICATE KEY UPDATE alias=VALUES(alias)"
+	QUERY_CATEGORY      = "SELECT name, alias FROM " + TABLE_NAME_CATEGORY + " LIMIT ?, ?"
 )
 
 type Category struct {
-	Name        string
-	Description string
+	Name  string
+	Alias string
 }
 
 func QueryCategory() ([]Category, error) {
@@ -31,15 +31,15 @@ func QueryCategory() ([]Category, error) {
 	defer stmt.Close() // Close the statement when we leave main() / the program terminates
 
 	var (
-		name, description string
-		cs                []Category
+		name, alias string
+		cs          []Category
 	)
 	rows, err := stmt.Query(0, 10)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&name, &description)
+		err = rows.Scan(&name, &alias)
 		if err != nil {
 			panic(err)
 		}
@@ -47,7 +47,7 @@ func QueryCategory() ([]Category, error) {
 			c Category
 		)
 		c.Name = name
-		c.Description = description
+		c.Alias = alias
 
 		cs = append(cs, c)
 	}
@@ -69,7 +69,7 @@ func (c *Category) Save() error {
 	}
 	defer stmt.Close() // Close the statement when we leave main() / the program terminates
 
-	_, err = stmt.Exec(c.Name, c.Description)
+	_, err = stmt.Exec(c.Name, c.Alias)
 	if err != nil {
 		return err
 	}

@@ -34,5 +34,9 @@ func install() {
 	if err != nil {
 		panic(err)
 	}
+	err = importCategories()
+	if err != nil {
+		panic(err)
+	}
 	defer da.Close()
 }

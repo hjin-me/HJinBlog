@@ -13,14 +13,15 @@ import (
 
 const (
 	TABLE_NAME_POSTS = "blog_posts"
-	INSERT_POSTS     = "INSERT INTO " + TABLE_NAME_POSTS + "(content, category, pubtime, title, description, tags) VALUES (?,?,?,?,?,?)"
-	UPDATE_POSTS     = "UPDATE " + TABLE_NAME_POSTS + " SET content=?, category=?, pubtime=?, title=?, description=?, tags=? WHERE id=?"
-	QUERY_POSTS      = "SELECT id, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_POSTS + " ORDER BY pubtime DESC LIMIT ?,?"
-	FIND_POSTS       = "SELECT id, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_POSTS + " WHERE id = ?"
+	INSERT_POSTS     = "INSERT INTO " + TABLE_NAME_POSTS + "(uid, content, category, pubtime, title, description, tags) VALUES (?,?,?,?,?,?,?)"
+	UPDATE_POSTS     = "UPDATE " + TABLE_NAME_POSTS + " SET uid=?, content=?, category=?, pubtime=?, title=?, description=?, tags=? WHERE id=?"
+	QUERY_POSTS      = "SELECT id, uid, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_POSTS + " ORDER BY pubtime DESC LIMIT ?,?"
+	FIND_POSTS       = "SELECT id, uid, content, category, pubtime, title, description, tags FROM " + TABLE_NAME_POSTS + " WHERE id = ?"
 )
 
 type RawPost struct {
 	Id          int
+	UserId      int
 	Title       string
 	Content     string
 	Category    string
@@ -98,7 +99,7 @@ func (p *RawPost) Save() error {
 		defer stmt.Close() // Close the statement when we leave main() / the program terminates
 	}
 
-	result, err := stmt.Exec(string(p.Content), p.Category, p.PubTime.Unix(), p.Title, p.Description, p.Keywords.String(), p.Id)
+	result, err := stmt.Exec(p.UserId, string(p.Content), p.Category, p.PubTime.Unix(), p.Title, p.Description, p.Keywords.String(), p.Id)
 	if err != nil {
 		return err
 	}
@@ -132,6 +133,7 @@ func ReadRaw(id int) RawPost {
 	defer stmt.Close()
 
 	var (
+		uid         int
 		content     string
 		category    string
 		pubtime     int64
@@ -139,7 +141,7 @@ func ReadRaw(id int) RawPost {
 		description string
 		tags        string
 	)
-	err = stmt.QueryRow(id).Scan(&id, &content, &category, &pubtime, &title, &description, &tags)
+	err = stmt.QueryRow(id).Scan(&id, &uid, &content, &category, &pubtime, &title, &description, &tags)
 	if err != nil {
 		panic(err)
 	}
@@ -195,6 +197,7 @@ func Query(start, limit int) []Post {
 
 	var (
 		id          int
+		uid         int
 		content     string
 		category    string
 		pubtime     int64
@@ -204,7 +207,7 @@ func Query(start, limit int) []Post {
 	)
 	rows, err := stmt.Query(start, limit)
 	for rows.Next() {
-		err = rows.Scan(&id, &content, &category, &pubtime, &title, &description, &tags)
+		err = rows.Scan(&id, &uid, &content, &category, &pubtime, &title, &description, &tags)
 		if err != nil {
 			panic(err)
 		}
