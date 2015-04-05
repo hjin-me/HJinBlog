@@ -1,0 +1,1 @@
+mysql: "root:songsong@tcp(10.211.55.8:3306)/content"

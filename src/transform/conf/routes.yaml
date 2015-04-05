@@ -1,0 +1,49 @@
+routes:
+    -   rule: "/login" 
+        method: 
+            - GET
+        action: login_page
+    -   rule: "/login" 
+        method: 
+            - POST
+        action: login_post
+    -   rule: "/cp/dashboard"
+        method:
+            - GET
+        action: admin_dashboard_page
+    -   rule: "/cp/users"
+        method:
+            - GET
+        action: admin_users_page
+    -   rule: "/cp/user"
+        method:
+            - GET
+        action: admin_user_page
+    -   rule: "/cp/user"
+        method:
+            - POST
+        action: admin_user_post
+    -   rule: "/cp/posts"
+        method:
+            - GET
+        action: admin_posts_page
+    -   rule: "/cp/post/:id"
+        method:
+            - GET
+        action: admin_post_page
+    -   rule: "/cp/post/:id"
+        method:
+            - POST
+        action: admin_post_post
+    -   rule: "/post/:id"
+        method:
+            - GET
+        action: post_page
+    -   rule: "/archives"
+        method:
+            - GET
+        action: archives_page
+    -   rule: "/"
+        method:
+            - GET
+        action: home_page
