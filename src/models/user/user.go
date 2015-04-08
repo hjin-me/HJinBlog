@@ -9,7 +9,10 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/hjin-me/banana"
 )
 
 const (
@@ -23,8 +26,9 @@ const (
 )
 
 var (
-	salt    = "xxx"
+	gSalt   = ""
 	Expires = time.Second * 86400
+	once    sync.Once
 )
 
 type User struct {
@@ -33,8 +37,22 @@ type User struct {
 	Privilege Privilege
 }
 
+func getSalt() string {
+	once.Do(func() {
+		cfg := struct {
+			Salt string `yaml:"salt"`
+		}{}
+		_, err := banana.Config("security.yaml", &cfg)
+		if err != nil {
+			panic(err)
+		}
+		gSalt = cfg.Salt
+	})
+	return gSalt
+}
+
 func Hash(str string) string {
-	s := sha1.Sum([]byte(salt + str))
+	s := sha1.Sum([]byte(getSalt() + str))
 	return hex.EncodeToString(s[:])
 }
 
@@ -112,7 +130,7 @@ func Check(username, pwd string) (bool, string, error) {
 
 	ts := strconv.FormatInt(time.Now().Add(Expires).Unix(), 10)
 	username = base64.StdEncoding.EncodeToString([]byte(username))
-	sign := fmt.Sprintf("%s|%s|%s", username, ts, Hash(username+ts+salt))
+	sign := fmt.Sprintf("%s|%s|%s", username, ts, Hash(username+ts+getSalt()))
 
 	return true, sign, nil
 }
@@ -140,6 +158,7 @@ func DecodeToken(token string) (isLogin bool, username string, err error) {
 		isLogin = false
 		return
 	}
+	salt := getSalt()
 
 	if sign != Hash(username+ts+salt) {
 		log.Println("hash not ok", sign, Hash(username+ts+salt))
