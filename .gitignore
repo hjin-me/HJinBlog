@@ -9,3 +9,4 @@ conf/app.yaml
 src/github.com
 .DS_Store
 ._.DS_Store
+*.yaml

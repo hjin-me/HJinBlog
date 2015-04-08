@@ -5,6 +5,7 @@ import (
 	"models/category"
 	"models/post"
 	"strconv"
+	"theme"
 
 	"github.com/hjin-me/banana"
 )
@@ -51,15 +52,15 @@ func Read(ctx banana.Context) error {
 	}
 
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"my:page/post", x}
-	return ctx.Tpl("my:page/layout", layout)
+	layout.Content = ThemeBlock{theme.UI("post"), x}
+	return ctx.Tpl(theme.UI("layout"), layout)
 }
 
 func Latest(ctx banana.Context) error {
 	ps := post.Query(0, 5)
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"my:page/home", ps}
-	return ctx.Tpl("my:page/layout", layout)
+	layout.Content = ThemeBlock{theme.UI("home"), ps}
+	return ctx.Tpl(theme.UI("layout"), layout)
 	/*
 		posts, err := models.ZRange("pubtime", 0, 4)
 		if err != nil {
@@ -85,11 +86,11 @@ func Category(ctx banana.Context) error {
 	}
 
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"my:page/category", struct {
+	layout.Content = ThemeBlock{theme.UI("category"), struct {
 		List  []post.Post
 		Bread category.Category
 	}{ps, ca}}
-	return ctx.Tpl("my:page/layout", layout)
+	return ctx.Tpl(theme.UI("layout"), layout)
 }
 
 type HomeLayout struct {
@@ -100,5 +101,5 @@ func Query(ctx banana.Context) error {
 	posts := post.Query(0, 10)
 	layout := HomeLayout{}
 	layout.Content = posts
-	return ctx.Tpl("my/home", layout)
+	return ctx.Tpl(theme.UI("home"), layout)
 }

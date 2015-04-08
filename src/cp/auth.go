@@ -5,6 +5,7 @@ import (
 	"log"
 	"models/user"
 	"net/http"
+	"theme"
 	"time"
 
 	"github.com/hjin-me/banana"
@@ -67,7 +68,7 @@ func Auth(ctx banana.Context, p ...int) error {
 }
 
 func LoginPage(ctx banana.Context) error {
-	return ctx.Tpl("cp:page/login", 0)
+	return ctx.Tpl(theme.CP("login"), 0)
 }
 
 func Login(ctx banana.Context) error {

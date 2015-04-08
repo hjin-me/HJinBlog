@@ -5,6 +5,7 @@ import (
 	"models/post"
 	"net/http"
 	"strconv"
+	"theme"
 
 	"github.com/hjin-me/banana"
 )
@@ -29,8 +30,8 @@ func NewPost(ctx banana.Context) error {
 
 	p := post.New()
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/post", struct{ Post, Categories interface{} }{p, categories}}
-	return ctx.Tpl("cp:page/layout", layout)
+	layout.Content = ThemeBlock{theme.CP("post"), struct{ Post, Categories interface{} }{p, categories}}
+	return ctx.Tpl(theme.CP("layout"), layout)
 }
 
 func SaveNewPost(ctx banana.Context) error {
@@ -97,8 +98,8 @@ func Post(ctx banana.Context) error {
 	}
 
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/post", struct{ Post, Categories interface{} }{p, categories}}
-	return ctx.Tpl("cp:page/layout", layout)
+	layout.Content = ThemeBlock{theme.CP("post"), struct{ Post, Categories interface{} }{p, categories}}
+	return ctx.Tpl(theme.CP("layout"), layout)
 }
 
 func SavePost(ctx banana.Context) error {

@@ -3,6 +3,7 @@ package cp
 import (
 	"models/post"
 	"net/http"
+	"theme"
 
 	"github.com/hjin-me/banana"
 )
@@ -23,6 +24,6 @@ func Posts(ctx banana.Context) error {
 
 	ps := post.Query(0, 10)
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/posts", ps}
-	return ctx.Tpl("cp:page/layout", layout)
+	layout.Content = ThemeBlock{theme.CP("posts"), ps}
+	return ctx.Tpl(theme.CP("layout"), layout)
 }

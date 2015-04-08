@@ -2,6 +2,7 @@ package cp
 
 import (
 	"net/http"
+	"theme"
 
 	"github.com/hjin-me/banana"
 )
@@ -21,6 +22,6 @@ func DashBoard(ctx banana.Context) error {
 	}
 
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/starter", 1}
-	return ctx.Tpl("cp:page/layout", layout)
+	layout.Content = ThemeBlock{theme.CP("starter"), 1}
+	return ctx.Tpl(theme.CP("layout"), layout)
 }

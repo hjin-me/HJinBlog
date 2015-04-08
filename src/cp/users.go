@@ -4,6 +4,7 @@ import (
 	"models/user"
 	"net/http"
 	"strconv"
+	"theme"
 
 	"github.com/hjin-me/banana"
 )
@@ -26,8 +27,8 @@ func Users(ctx banana.Context) error {
 		return err
 	}
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/users", struct{ List interface{} }{users}}
-	return ctx.Tpl("cp:page/layout", layout)
+	layout.Content = ThemeBlock{theme.CP("users"), struct{ List interface{} }{users}}
+	return ctx.Tpl(theme.CP("layout"), layout)
 }
 
 func UsersCreatePage(ctx banana.Context) error {
@@ -61,8 +62,8 @@ func UsersCreatePage(ctx banana.Context) error {
 	*/
 	u := 1
 	layout := ThemeLayout{}
-	layout.Content = ThemeBlock{"cp:page/user", struct{ Info interface{} }{u}}
-	return ctx.Tpl("cp:page/layout", layout)
+	layout.Content = ThemeBlock{theme.CP("user"), struct{ Info interface{} }{u}}
+	return ctx.Tpl(theme.CP("layout"), layout)
 
 }
 

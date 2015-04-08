@@ -17,7 +17,6 @@ func main() {
 	if !ok {
 		log.Fatalln("configuration not ok")
 	}
-	log.Println(cfg)
 	dsnRaw, ok := cfg.Env.Db["mysql"]
 	if !ok {
 		log.Fatalln("mysql conf not exits")
