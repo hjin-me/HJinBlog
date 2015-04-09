@@ -30,11 +30,11 @@ func install() {
 		log.Fatalln(err)
 	}
 	log.Println("database connected")
-	err = importUsers()
+	err = CreateUser()
 	if err != nil {
 		panic(err)
 	}
-	err = importCategories()
+	err = CreateCategories()
 	if err != nil {
 		panic(err)
 	}

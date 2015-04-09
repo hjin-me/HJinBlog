@@ -57,7 +57,7 @@ func Read(ctx banana.Context) error {
 }
 
 func Latest(ctx banana.Context) error {
-	ps := post.Query(0, 5)
+	ps := post.Query(0, 10)
 	layout := ThemeLayout{}
 	layout.Content = ThemeBlock{theme.UI("home"), ps}
 	return ctx.Tpl(theme.UI("layout"), layout)

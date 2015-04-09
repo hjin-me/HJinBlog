@@ -8,9 +8,9 @@ import (
 func importPosts() error {
 	var (
 		targetTableName = "blog_posts"
-		sourceTableName = "content_articles"
+		sourceTableName = "huangjin_blog"
 
-		readSQL   = "SELECT articleid, uid, content, cid, dateline, title, description, keywords FROM " + sourceTableName
+		readSQL   = "SELECT id, alias, content, category, pubtime, title, description, tags FROM " + sourceTableName
 		insertSQL = "INSERT INTO " + targetTableName + "(id, alias, uid, content, cid, pubtime, title, description, keywords) VALUES (?,?,?,?,?,?,?,?,?)"
 	)
 	db, err := da.Connect()
@@ -40,14 +40,25 @@ func importPosts() error {
 
 	for rows.Next() {
 		var (
-			id, uid, category, pubtime        int64
-			content, title, description, tags string
+			id, uid, pubtime, cid                              int64
+			alias, category, content, title, description, tags string
 		)
-		err := rows.Scan(&id, &uid, &content, &category, &pubtime, &title, &description, &tags)
+		err := rows.Scan(&id, &alias, &content, &category, &pubtime, &title, &description, &tags)
+		switch category {
+		case "it":
+			cid = 1
+		case "chat":
+			cid = 2
+		case "live":
+			cid = 3
+		default:
+			cid = 0
+		}
+		uid = 1
 		if err != nil {
 			return err
 		}
-		_, err = insertStmt.Exec(id, id, uid, content, category, pubtime, title, description, tags)
+		_, err = insertStmt.Exec(id, alias, uid, content, cid, pubtime, title, description, tags)
 		if err != nil {
 			return err
 		}

@@ -51,7 +51,7 @@ routes:
         method:
             - GET
         action: archives_page
-    -   rule: "/:year/:month/:day/:id"
+    -   rule: "/post/:id"
         method:
             - GET
         action: post_page

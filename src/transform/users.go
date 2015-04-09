@@ -4,6 +4,7 @@ import (
 	"da"
 	"log"
 	"models/user"
+	"time"
 )
 
 var (
@@ -49,7 +50,7 @@ func importUsers() error {
 			return err
 		}
 
-		pwd := "xiaoyeye"
+		pwd := ""
 		privilege := 0xFFFF
 
 		_, err = insertStmt.Exec(uid, username, user.Hash(pwd), privilege, createTS)
@@ -59,4 +60,33 @@ func importUsers() error {
 	}
 	return nil
 
+}
+
+func CreateUser() error {
+	var (
+		uid      int    = 1
+		username string = "HJin"
+		createTS int64  = time.Now().Unix()
+	)
+
+	pwd := ""
+	privilege := 0xFFFF
+
+	db, err := da.Connect()
+	if err != nil {
+		return err
+	}
+	insertStmt, err := db.Prepare(insertSQL)
+	if err != nil {
+		log.Println("insert")
+		return err
+	}
+	defer insertStmt.Close()
+	db.Exec("delete from " + targetTableName)
+	_, err = insertStmt.Exec(uid, username, user.Hash(pwd), privilege, createTS)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
